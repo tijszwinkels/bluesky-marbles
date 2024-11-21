@@ -28,13 +28,8 @@ h1 {
 
 .stats-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 15px;
-  background: #2a2a2a;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  flex-shrink: 0;
+  grid-template-columns: 1fr;
+  gap: 15px;
 }
 
 .stat-item {
@@ -42,14 +37,14 @@ h1 {
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: #2196f3;
 }
 
 .stat-label {
   color: #aaa;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .last-tweet {
@@ -79,18 +74,29 @@ h1 {
   position: relative;
 }
 
-.config-container {
-  flex: 0 0 250px;
+.right-panel {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel-section {
   background: #2a2a2a;
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  overflow-y: auto;
 }
 
-.config-container h3 {
+.panel-section h3 {
   margin: 0 0 15px 0;
   color: #fff;
+}
+
+.config-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .config-item {

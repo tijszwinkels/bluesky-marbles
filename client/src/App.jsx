@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import WebSocketService from './services/websocket';
-import Stats from './components/Stats';
 import Filter from './components/Filter';
 import LastTweet from './components/LastTweet';
 import MarblesDisplay from './components/MarblesDisplay';
-import Config from './components/Config';
+import RightPanel from './components/RightPanel';
 import './App.css';
 
 function App() {
@@ -90,9 +89,6 @@ function App() {
       <div className="filter-container">
         <Filter value={filterTerm} onChange={handleFilterChange} />
       </div>
-      <div className="stats-container">
-        <Stats stats={stats} />
-      </div>
       <div className="last-tweet">
         <LastTweet messages={messages} />
       </div>
@@ -100,14 +96,13 @@ function App() {
         <div className="marbles-container">
           <MarblesDisplay messages={messages} timeout={timeout} marbleSize={marbleSize} />
         </div>
-        <div className="config-container">
-          <Config 
-            timeout={timeout} 
-            onTimeoutChange={handleTimeoutChange}
-            marbleSize={marbleSize}
-            onMarbleSizeChange={handleMarbleSizeChange}
-          />
-        </div>
+        <RightPanel 
+          stats={stats}
+          timeout={timeout}
+          onTimeoutChange={handleTimeoutChange}
+          marbleSize={marbleSize}
+          onMarbleSizeChange={handleMarbleSizeChange}
+        />
       </div>
     </div>
   );

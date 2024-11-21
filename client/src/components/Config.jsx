@@ -27,7 +27,6 @@ function Config({ timeout, onTimeoutChange, marbleSize, onMarbleSizeChange }) {
 
   return (
     <div className="config-container">
-      <h3>Configuration</h3>
       <div className="config-item">
         <label>Marble Timeout (seconds)</label>
         <div className="config-controls">

@@ -3,22 +3,22 @@ import { formatBytes } from '../utils/formatters';
 
 function Stats({ stats }) {
   return (
-    <div className="stats">
+    <div className="stats-container">
       <div className="stat-item">
-        <label>Messages/sec:</label>
-        <span>{stats.messagesPerSecond}</span>
+        <div className="stat-value">{stats?.messagesPerSecond || 0}</div>
+        <div className="stat-label">Messages/sec</div>
       </div>
       <div className="stat-item">
-        <label>Messages/min:</label>
-        <span>{stats.messagesPerMinute}</span>
+        <div className="stat-value">{stats?.messagesPerMinute || 0}</div>
+        <div className="stat-label">Messages/min</div>
       </div>
       <div className="stat-item">
-        <label>Bytes/sec:</label>
-        <span>{formatBytes(stats.bytesPerSecond)}/s</span>
+        <div className="stat-value">{formatBytes(stats?.bytesPerSecond || 0)}/s</div>
+        <div className="stat-label">Throughput</div>
       </div>
       <div className="stat-item">
-        <label>Bytes/min:</label>
-        <span>{formatBytes(stats.bytesPerMinute)}/m</span>
+        <div className="stat-value">{formatBytes(stats?.bytesPerMinute || 0)}/m</div>
+        <div className="stat-label">Volume/min</div>
       </div>
     </div>
   );
