@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import WebSocketService from './services/websocket';
 import Stats from './components/Stats';
 import Filter from './components/Filter';
-import DotsDisplay from './components/DotsDisplay';
+import LastTweet from './components/LastTweet';
+import MarblesDisplay from './components/MarblesDisplay';
 import './App.css';
 
 function App() {
@@ -59,9 +60,18 @@ function App() {
   return (
     <div className="container">
       <h1>BlueSky Jetstream Visualization</h1>
-      <Filter value={filterTerm} onChange={handleFilterChange} />
-      <Stats stats={stats} />
-      <DotsDisplay messages={messages} />
+      <div className="filter-container">
+        <Filter value={filterTerm} onChange={handleFilterChange} />
+      </div>
+      <div className="stats-container">
+        <Stats stats={stats} />
+      </div>
+      <div className="last-tweet">
+        <LastTweet messages={messages} />
+      </div>
+      <div className="marbles-container">
+        <MarblesDisplay messages={messages} />
+      </div>
     </div>
   );
 }
