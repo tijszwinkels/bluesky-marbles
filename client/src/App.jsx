@@ -9,7 +9,10 @@ import './App.css';
 
 function App() {
   const [messages, setMessages] = useState([]);
-  const [filterTerm, setFilterTerm] = useState('');
+  const [filterTerm, setFilterTerm] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('filter') || '';
+  });
   const [timeout, setTimeout] = useState(60);
   const [stats, setStats] = useState({
     messagesPerSecond: 0,
@@ -32,6 +35,11 @@ function App() {
 
     // Connect to WebSocket
     wsService.connect();
+
+    // Set initial filter if present in URL
+    if (filterTerm) {
+      wsService.setFilter(filterTerm);
+    }
 
     // Cleanup on unmount
     return () => {
@@ -57,6 +65,14 @@ function App() {
     }
     // Reset messages when filter changes
     setMessages([]);
+    // Update URL
+    const url = new URL(window.location);
+    if (newFilterTerm) {
+      url.searchParams.set('filter', newFilterTerm);
+    } else {
+      url.searchParams.delete('filter');
+    }
+    window.history.pushState({}, '', url);
   };
 
   const handleTimeoutChange = (newTimeout) => {
