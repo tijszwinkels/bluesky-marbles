@@ -67,7 +67,7 @@ function VaseWall({ position, rotation, args }) {
 }
 
 function Vase() {
-  const height = 8;
+  const height = 11;
   const thickness = 0.2;
   const bottomWidth = 4;
   const topWidth = 6;
@@ -139,13 +139,13 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
 
   // Calculate camera position with 30° offset
   const angle = Math.PI / 6; // 30 degrees in radians
-  const distance = 15;
+  const distance = 20;
   const cameraX = Math.sin(angle) * distance;
   const cameraZ = Math.cos(angle) * distance;
 
   return (
     <div className="marbles-container">
-      <Canvas shadows camera={{ position: [cameraX, 10, cameraZ], fov: 45 }}>
+      <Canvas shadows camera={{ position: [cameraX, 14, cameraZ], fov: 45, target: [0, 4, 0] }}>
         <color attach="background" args={['#f5f5f5']} />
         <ambientLight intensity={0.8} />
         <spotLight
@@ -174,7 +174,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
             />
           ))}
         </Physics>
-        <OrbitControls enablePan={false} />
+        <OrbitControls enablePan={true} target={[0, 4, 0]} />
       </Canvas>
     </div>
   );
