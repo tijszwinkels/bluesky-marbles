@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics, useSphere, usePlane } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
@@ -66,14 +66,16 @@ function Walls() {
 
 function MarblesDisplay({ messages, timeout = 60 }) {
   const [marbles, setMarbles] = useState([]);
+  const marbleCountRef = useRef(0);
 
   useEffect(() => {
     if (messages.length === 0) return;
 
     // Add a new marble for the latest message
     const lastMessage = messages[messages.length - 1];
+    marbleCountRef.current += 1;
     const newMarble = {
-      id: lastMessage.id || Date.now(),
+      id: `marble-${Date.now()}-${marbleCountRef.current}`, // Ensure unique ID
       timestamp: Date.now(),
       position: [Math.random() * 4 - 2, 6, Math.random() * 4 - 2], // Random position at the top
       color: '#' + Math.floor(Math.random() * 16777215).toString(16), // Random color
