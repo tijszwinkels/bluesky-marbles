@@ -12,8 +12,18 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get('filter') || '';
   });
-  const [timeout, setTimeout] = useState(60);
-  const [marbleSize, setMarbleSize] = useState(0.2);
+  const [timeout, setTimeout] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return parseInt(params.get('timeout')) || 60;
+  });
+  const [marbleSize, setMarbleSize] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return parseFloat(params.get('size')) || 0.2;
+  });
+  const [fadeEnabled, setFadeEnabled] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('fade') !== 'false';
+  });
   const [stats, setStats] = useState({
     messagesPerSecond: 0,
     messagesPerMinute: 0,
@@ -47,6 +57,18 @@ function App() {
     };
   }, []);
 
+  const updateURL = (updates) => {
+    const url = new URL(window.location);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === undefined || value === '') {
+        url.searchParams.delete(key);
+      } else {
+        url.searchParams.set(key, value);
+      }
+    });
+    window.history.pushState({}, '', url);
+  };
+
   const handleMessage = (data, newStats) => {
     // Update stats regardless of whether we received a message
     setStats(newStats);
@@ -66,21 +88,22 @@ function App() {
     // Reset messages when filter changes
     setMessages([]);
     // Update URL
-    const url = new URL(window.location);
-    if (newFilterTerm) {
-      url.searchParams.set('filter', newFilterTerm);
-    } else {
-      url.searchParams.delete('filter');
-    }
-    window.history.pushState({}, '', url);
+    updateURL({ filter: newFilterTerm });
   };
 
   const handleTimeoutChange = (newTimeout) => {
     setTimeout(newTimeout);
+    updateURL({ timeout: newTimeout });
   };
 
   const handleMarbleSizeChange = (newSize) => {
     setMarbleSize(newSize);
+    updateURL({ size: newSize });
+  };
+
+  const handleFadeChange = (enabled) => {
+    setFadeEnabled(enabled);
+    updateURL({ fade: enabled ? null : 'false' }); // Only add to URL when disabled
   };
 
   return (
@@ -93,7 +116,12 @@ function App() {
       </div>
       <div className="visualization-row">
         <div className="marbles-container">
-          <MarblesDisplay messages={messages} timeout={timeout} marbleSize={marbleSize} />
+          <MarblesDisplay 
+            messages={messages} 
+            timeout={timeout} 
+            marbleSize={marbleSize}
+            fadeEnabled={fadeEnabled}
+          />
         </div>
         <RightPanel 
           stats={stats}
@@ -101,6 +129,8 @@ function App() {
           onTimeoutChange={handleTimeoutChange}
           marbleSize={marbleSize}
           onMarbleSizeChange={handleMarbleSizeChange}
+          fadeEnabled={fadeEnabled}
+          onFadeChange={handleFadeChange}
         />
       </div>
     </div>

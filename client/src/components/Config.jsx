@@ -1,6 +1,13 @@
 import React from 'react';
 
-function Config({ timeout, onTimeoutChange, marbleSize, onMarbleSizeChange }) {
+function Config({ 
+  timeout, 
+  onTimeoutChange, 
+  marbleSize, 
+  onMarbleSizeChange,
+  fadeEnabled,
+  onFadeChange
+}) {
   const handleTimeoutSliderChange = (e) => {
     const value = parseInt(e.target.value, 10);
     onTimeoutChange(value);
@@ -25,8 +32,13 @@ function Config({ timeout, onTimeoutChange, marbleSize, onMarbleSizeChange }) {
     }
   };
 
+  const handleFadeChange = (e) => {
+    onFadeChange(e.target.checked);
+  };
+
   return (
     <div className="config-container">
+      <h3>Configuration</h3>
       <div className="config-item">
         <label>Marble Timeout (seconds)</label>
         <div className="config-controls">
@@ -70,6 +82,17 @@ function Config({ timeout, onTimeoutChange, marbleSize, onMarbleSizeChange }) {
             className="config-input"
           />
         </div>
+      </div>
+      <div className="config-item">
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={fadeEnabled}
+            onChange={handleFadeChange}
+            className="config-checkbox"
+          />
+          Enable Fade Effect
+        </label>
       </div>
     </div>
   );

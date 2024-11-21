@@ -64,7 +64,7 @@ function Walls() {
   );
 }
 
-function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2 }) {
+function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled = true }) {
   const [marbles, setMarbles] = useState([]);
   const marbleCountRef = useRef(0);
 
@@ -90,8 +90,9 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2 }) {
     );
   }, [messages, timeout]);
 
-  // Calculate opacity based on remaining time
+  // Calculate opacity based on remaining time and fade setting
   const getOpacity = (timestamp) => {
+    if (!fadeEnabled) return 1;
     const age = Date.now() - timestamp;
     const remainingTime = (timeout * 1000) - age;
     return Math.max(0.2, remainingTime / (timeout * 1000));

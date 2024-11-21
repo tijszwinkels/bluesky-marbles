@@ -7,7 +7,9 @@ function RightPanel({
   timeout, 
   onTimeoutChange, 
   marbleSize, 
-  onMarbleSizeChange 
+  onMarbleSizeChange,
+  fadeEnabled,
+  onFadeChange
 }) {
   return (
     <div className="right-panel">
@@ -21,6 +23,8 @@ function RightPanel({
           onTimeoutChange={onTimeoutChange}
           marbleSize={marbleSize}
           onMarbleSizeChange={onMarbleSizeChange}
+          fadeEnabled={fadeEnabled}
+          onFadeChange={onFadeChange}
         />
       </div>
     </div>
