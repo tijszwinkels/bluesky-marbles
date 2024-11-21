@@ -1,0 +1,26 @@
+import React from 'react';
+
+const LastTweet = ({ messages }) => {
+  if (messages.length === 0) return null;
+
+  const lastMessage = messages[messages.length - 1];
+  if (lastMessage.kind !== 'commit' || !lastMessage.commit?.record?.text) return null;
+
+  const text = lastMessage.commit.record.text;
+  const author = lastMessage.did;
+  const postId = lastMessage.commit.rkey;
+
+  const blueskyUrl = `https://bsky.app/profile/${author}/post/${postId}`;
+
+  return (
+    <div className="last-tweet-container">
+      <div className="last-tweet">
+        <a href={blueskyUrl} target="_blank" rel="noopener noreferrer">
+          <strong>{author}</strong>: {text}
+        </a>
+      </div>
+    </div>
+  );
+};
+
+export default LastTweet;
