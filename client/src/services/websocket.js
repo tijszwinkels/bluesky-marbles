@@ -1,7 +1,8 @@
 class WebSocketService {
-  constructor(url, onMessage) {
+  constructor(url, onMessage, timeout = 60) {
     this.url = url;
     this.onMessage = onMessage;
+    this.timeout = timeout * 1000; // Convert seconds to milliseconds
     this.ws = null;
     this.messageStats = {
       all: {
@@ -13,18 +14,22 @@ class WebSocketService {
         bytes: [],
       }
     };
-    this.wordFrequencies = new Map(); // Track word frequencies
-    this.wordTimestamps = new Map(); // Track when each word was added
+    this.wordOccurrences = new Map(); // Map<word, timestamp[]>
     this.filterTerm = '';
+  }
+
+  setTimeout(seconds) {
+    this.timeout = seconds * 1000;
   }
 
   setFilter(term) {
     this.filterTerm = term.toLowerCase();
-    // Reset filtered stats when filter changes
+    // Reset filtered stats and word frequencies when filter changes
     this.messageStats.filtered = {
       messages: [],
       bytes: [],
     };
+    this.wordOccurrences.clear();
   }
 
   shouldIncludeMessage(data) {
@@ -34,48 +39,60 @@ class WebSocketService {
   }
 
   updateWordFrequencies(text, now) {
-    // Split text into words and count frequencies
-    const words = text.split(/\s+/)
-      .map(word => word.toLowerCase())
-      .filter(word => word.length > 4 && /^[a-z]+$/.test(word)); // Only words > 4 chars, letters only
-
+    // Split on whitespace and process each word
+    const words = new Set(
+      text.toLowerCase()
+        .split(/\s+/)
+        .filter(word => 
+          word.length > 4 && 
+          word.split('').every(char => char >= 'a' && char <= 'z')
+        )
+    );
+    
     words.forEach(word => {
-      // Update frequency
-      this.wordFrequencies.set(word, (this.wordFrequencies.get(word) || 0) + 1);
-      // Update timestamp
-      this.wordTimestamps.set(word, now);
+      const timestamps = this.wordOccurrences.get(word) || [];
+      timestamps.push(now);
+      this.wordOccurrences.set(word, timestamps);
     });
   }
 
-  cleanupExpiredWords(now) {
-    const oneMinuteAgo = now - 60000;
-    for (const [word, timestamp] of this.wordTimestamps.entries()) {
-      if (timestamp < oneMinuteAgo) {
-        this.wordFrequencies.delete(word);
-        this.wordTimestamps.delete(word);
+  getWordFrequencies(now) {
+    const cutoff = now - this.timeout;
+    const frequencies = new Map();
+
+    for (const [word, timestamps] of this.wordOccurrences.entries()) {
+      // Filter out expired timestamps and update the array
+      const validTimestamps = timestamps.filter(ts => ts > cutoff);
+      
+      if (validTimestamps.length > 0) {
+        // Update the timestamps array with only valid ones
+        this.wordOccurrences.set(word, validTimestamps);
+        frequencies.set(word, validTimestamps.length);
+      } else {
+        // Remove words with no valid timestamps
+        this.wordOccurrences.delete(word);
       }
     }
+
+    return frequencies;
   }
 
   calculateStats(now) {
-    const oneMinuteAgo = now - 60000;
+    const cutoff = now - this.timeout;
     
-    // Clean up old stats (older than 1 minute)
+    // Clean up old stats
     this.messageStats.all.messages = this.messageStats.all.messages.filter(
-      (timestamp) => timestamp > oneMinuteAgo
+      (timestamp) => timestamp > cutoff
     );
     this.messageStats.all.bytes = this.messageStats.all.bytes.filter(
-      (item) => item.timestamp > oneMinuteAgo
+      (item) => item.timestamp > cutoff
     );
     this.messageStats.filtered.messages = this.messageStats.filtered.messages.filter(
-      (timestamp) => timestamp > oneMinuteAgo
+      (timestamp) => timestamp > cutoff
     );
     this.messageStats.filtered.bytes = this.messageStats.filtered.bytes.filter(
-      (item) => item.timestamp > oneMinuteAgo
+      (item) => item.timestamp > cutoff
     );
-
-    // Clean up expired words
-    this.cleanupExpiredWords(now);
 
     // Use filtered stats if filter is active, otherwise use all stats
     const stats = this.filterTerm ? this.messageStats.filtered : this.messageStats.all;
@@ -96,7 +113,7 @@ class WebSocketService {
       messagesPerMinute: stats.messages.length,
       bytesPerSecond: bytesLastSecond,
       bytesPerMinute: bytesLastMinute,
-      wordFrequencies: this.wordFrequencies, // Add word frequencies to stats
+      wordFrequencies: this.getWordFrequencies(now),
     };
   }
 
@@ -116,31 +133,28 @@ class WebSocketService {
       this.messageStats.all.messages.push(now);
       this.messageStats.all.bytes.push({ timestamp: now, size: byteSize });
 
-      // Update word frequencies if there's text in the message
-      const text = data.commit?.record?.text;
-      if (text) {
-        this.updateWordFrequencies(text, now);
-      }
-
       // Check if message passes filter
       if (this.shouldIncludeMessage(data)) {
         // Record in filtered stats
         this.messageStats.filtered.messages.push(now);
         this.messageStats.filtered.bytes.push({ timestamp: now, size: byteSize });
+
+        // Only update word frequencies for filtered messages
+        const text = data.commit?.record?.text;
+        if (text) {
+          this.updateWordFrequencies(text, now);
+        }
       }
 
       // Calculate stats based on current filter state
       const stats = this.calculateStats(now);
 
       // Call the onMessage callback with the data and stats
-      // Only pass the message if it passes the filter
       if (this.shouldIncludeMessage(data)) {
         this.onMessage(data, stats);
       } else if (!this.filterTerm) {
-        // If no filter, pass all messages
         this.onMessage(data, stats);
       } else {
-        // If filtered out, just update stats
         this.onMessage(null, stats);
       }
     };
