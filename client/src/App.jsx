@@ -108,31 +108,33 @@ function App() {
 
   return (
     <div className="container">
-      <div className="filter-container">
-        <Filter value={filterTerm} onChange={handleFilterChange} />
-      </div>
-      <div className="last-tweet">
-        <LastTweet messages={messages} />
-      </div>
-      <div className="visualization-row">
-        <div className="marbles-container">
-          <MarblesDisplay 
-            messages={messages} 
-            timeout={timeout} 
-            marbleSize={marbleSize}
-            fadeEnabled={fadeEnabled}
-          />
+      <div className="main-content">
+        <div className="filter-container">
+          <Filter value={filterTerm} onChange={handleFilterChange} />
         </div>
-        <RightPanel 
-          stats={stats}
-          timeout={timeout}
-          onTimeoutChange={handleTimeoutChange}
-          marbleSize={marbleSize}
-          onMarbleSizeChange={handleMarbleSizeChange}
-          fadeEnabled={fadeEnabled}
-          onFadeChange={handleFadeChange}
-        />
+        <div className="last-tweet">
+          <LastTweet messages={messages} />
+        </div>
+        <div className="visualization-row">
+          <div className="marbles-container">
+            <MarblesDisplay 
+              messages={messages} 
+              timeout={timeout} 
+              marbleSize={marbleSize}
+              fadeEnabled={fadeEnabled}
+            />
+          </div>
+        </div>
       </div>
+      <RightPanel 
+        stats={stats}
+        timeout={timeout}
+        onTimeoutChange={handleTimeoutChange}
+        marbleSize={marbleSize}
+        onMarbleSizeChange={handleMarbleSizeChange}
+        fadeEnabled={fadeEnabled}
+        onFadeChange={handleFadeChange}
+      />
     </div>
   );
 }
