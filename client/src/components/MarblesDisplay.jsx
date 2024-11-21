@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Physics, useSphere, usePlane } from '@react-three/cannon';
+import { Physics, useSphere, usePlane, useBox } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 import './MarblesDisplay.css';
 
@@ -14,12 +14,14 @@ function Marble({ position, color, opacity, size }) {
   return (
     <mesh ref={ref} castShadow receiveShadow>
       <sphereGeometry args={[size, 32, 32]} />
-      <meshStandardMaterial 
-        color={color} 
-        metalness={0.3} 
-        roughness={0.2}
+      <meshPhysicalMaterial 
+        color={color}
         transparent={true}
-        opacity={opacity} 
+        opacity={opacity}
+        roughness={0}
+        metalness={0.1}
+        transmission={0.9}
+        thickness={0.5}
       />
     </mesh>
   );
@@ -28,7 +30,7 @@ function Marble({ position, color, opacity, size }) {
 function Ground() {
   const [ref] = usePlane(() => ({
     rotation: [-Math.PI / 2, 0, 0],
-    position: [0, -2, 0],
+    position: [0, 0, 0],
   }));
 
   return (
@@ -39,29 +41,65 @@ function Ground() {
   );
 }
 
-function Walls() {
-  const wallProps = [
-    { position: [0, 1, -5], rotation: [0, 0, 0] }, // Back wall
-    { position: [-5, 1, 0], rotation: [0, Math.PI / 2, 0] }, // Left wall
-    { position: [5, 1, 0], rotation: [0, -Math.PI / 2, 0] }, // Right wall
-  ];
+function VaseWall({ position, rotation, args }) {
+  const [ref] = useBox(() => ({
+    args,
+    position,
+    rotation,
+    type: 'Static',
+  }));
 
   return (
-    <>
-      {wallProps.map((props, index) => {
-        const [ref] = usePlane(() => ({
-          ...props,
-          type: 'Static',
-        }));
+    <mesh ref={ref}>
+      <boxGeometry args={args} />
+      <meshPhysicalMaterial 
+        color="#ffffff"
+        transparent={true}
+        opacity={0.3}
+        roughness={0}
+        metalness={0.1}
+        transmission={0.9}
+        side={2}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
 
-        return (
-          <mesh key={index} ref={ref} receiveShadow>
-            <planeGeometry args={[10, 6]} />
-            <meshStandardMaterial color="#f0f0f0" side={2} transparent opacity={0.3} />
-          </mesh>
-        );
-      })}
-    </>
+function Vase() {
+  const height = 8;
+  const thickness = 0.2;
+  const bottomWidth = 4;
+  const topWidth = 6;
+  const wallHeight = height;
+
+  return (
+    <group position={[0, 4, 0]}>
+      {/* Front wall */}
+      <VaseWall 
+        position={[0, 0, topWidth/2]} 
+        rotation={[0.2, 0, 0]}
+        args={[topWidth, wallHeight, thickness]}
+      />
+      {/* Back wall */}
+      <VaseWall 
+        position={[0, 0, -topWidth/2]} 
+        rotation={[-0.2, 0, 0]}
+        args={[topWidth, wallHeight, thickness]}
+      />
+      {/* Left wall */}
+      <VaseWall 
+        position={[-topWidth/2, 0, 0]} 
+        rotation={[0, 0, -0.2]}
+        args={[thickness, wallHeight, topWidth]}
+      />
+      {/* Right wall */}
+      <VaseWall 
+        position={[topWidth/2, 0, 0]} 
+        rotation={[0, 0, 0.2]}
+        args={[thickness, wallHeight, topWidth]}
+      />
+    </group>
   );
 }
 
@@ -78,7 +116,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
     const newMarble = {
       id: `marble-${Date.now()}-${marbleCountRef.current}`, // Ensure unique ID
       timestamp: Date.now(),
-      position: [Math.random() * 4 - 2, 6, Math.random() * 4 - 2], // Random position at the top
+      position: [Math.random() * 4 - 2, 12, Math.random() * 4 - 2], // Random position at the top
       color: '#' + Math.floor(Math.random() * 16777215).toString(16), // Random color
     };
 
@@ -99,9 +137,15 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
     return Math.max(0.2, remainingTime / (timeout * 1000));
   };
 
+  // Calculate camera position with 30° offset
+  const angle = Math.PI / 6; // 30 degrees in radians
+  const distance = 15;
+  const cameraX = Math.sin(angle) * distance;
+  const cameraZ = Math.cos(angle) * distance;
+
   return (
     <div className="marbles-container">
-      <Canvas shadows camera={{ position: [0, 10, 15], fov: 45 }}>
+      <Canvas shadows camera={{ position: [cameraX, 10, cameraZ], fov: 45 }}>
         <color attach="background" args={['#f5f5f5']} />
         <ambientLight intensity={0.8} />
         <spotLight
@@ -119,7 +163,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
         />
         <Physics gravity={[0, -9.81, 0]}>
           <Ground />
-          <Walls />
+          <Vase />
           {marbles.map((marble) => (
             <Marble
               key={marble.id}
