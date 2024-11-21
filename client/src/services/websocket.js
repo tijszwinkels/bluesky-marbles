@@ -13,6 +13,8 @@ class WebSocketService {
         bytes: [],
       }
     };
+    this.wordFrequencies = new Map(); // Track word frequencies
+    this.wordTimestamps = new Map(); // Track when each word was added
     this.filterTerm = '';
   }
 
@@ -31,6 +33,30 @@ class WebSocketService {
     return text && text.toLowerCase().includes(this.filterTerm);
   }
 
+  updateWordFrequencies(text, now) {
+    // Split text into words and count frequencies
+    const words = text.split(/\s+/)
+      .map(word => word.toLowerCase())
+      .filter(word => word.length > 4 && /^[a-z]+$/.test(word)); // Only words > 4 chars, letters only
+
+    words.forEach(word => {
+      // Update frequency
+      this.wordFrequencies.set(word, (this.wordFrequencies.get(word) || 0) + 1);
+      // Update timestamp
+      this.wordTimestamps.set(word, now);
+    });
+  }
+
+  cleanupExpiredWords(now) {
+    const oneMinuteAgo = now - 60000;
+    for (const [word, timestamp] of this.wordTimestamps.entries()) {
+      if (timestamp < oneMinuteAgo) {
+        this.wordFrequencies.delete(word);
+        this.wordTimestamps.delete(word);
+      }
+    }
+  }
+
   calculateStats(now) {
     const oneMinuteAgo = now - 60000;
     
@@ -47,6 +73,9 @@ class WebSocketService {
     this.messageStats.filtered.bytes = this.messageStats.filtered.bytes.filter(
       (item) => item.timestamp > oneMinuteAgo
     );
+
+    // Clean up expired words
+    this.cleanupExpiredWords(now);
 
     // Use filtered stats if filter is active, otherwise use all stats
     const stats = this.filterTerm ? this.messageStats.filtered : this.messageStats.all;
@@ -67,6 +96,7 @@ class WebSocketService {
       messagesPerMinute: stats.messages.length,
       bytesPerSecond: bytesLastSecond,
       bytesPerMinute: bytesLastMinute,
+      wordFrequencies: this.wordFrequencies, // Add word frequencies to stats
     };
   }
 
@@ -85,6 +115,12 @@ class WebSocketService {
       // Always record in all stats
       this.messageStats.all.messages.push(now);
       this.messageStats.all.bytes.push({ timestamp: now, size: byteSize });
+
+      // Update word frequencies if there's text in the message
+      const text = data.commit?.record?.text;
+      if (text) {
+        this.updateWordFrequencies(text, now);
+      }
 
       // Check if message passes filter
       if (this.shouldIncludeMessage(data)) {

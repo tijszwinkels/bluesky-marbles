@@ -1,6 +1,7 @@
 import React from 'react';
 import Stats from './Stats';
 import Config from './Config';
+import WordFrequency from './WordFrequency';
 import './RightPanel.css';
 
 function RightPanel({ 
@@ -18,6 +19,7 @@ function RightPanel({
         <h3>Statistics</h3>
         <Stats stats={stats} />
       </div>
+      <WordFrequency wordFrequencies={stats.wordFrequencies || new Map()} />
       <div className="panel-section">
         <Config 
           timeout={timeout} 

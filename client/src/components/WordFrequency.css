@@ -1,0 +1,32 @@
+.word-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.word-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.word {
+  color: #fff;
+  font-size: 14px;
+}
+
+.count {
+  color: #888;
+  font-size: 14px;
+  font-family: monospace;
+}
+
+.no-words {
+  color: #666;
+  text-align: center;
+  padding: 10px;
+  font-style: italic;
+}
