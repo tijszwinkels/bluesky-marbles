@@ -1,4 +1,5 @@
 import React from 'react';
+import './LastTweet.css';
 
 const LastTweet = ({ messages }) => {
   if (messages.length === 0) return null;
@@ -13,12 +14,10 @@ const LastTweet = ({ messages }) => {
   const blueskyUrl = `https://bsky.app/profile/${author}/post/${postId}`;
 
   return (
-    <div className="last-tweet-container">
-      <div className="last-tweet">
-        <a href={blueskyUrl} target="_blank" rel="noopener noreferrer">
-          <strong>{author}</strong>: {text}
-        </a>
-      </div>
+    <div className="last-tweet">
+      <a href={blueskyUrl} target="_blank" rel="noopener noreferrer">
+        <strong>{author}</strong>: {text}
+      </a>
     </div>
   );
 };

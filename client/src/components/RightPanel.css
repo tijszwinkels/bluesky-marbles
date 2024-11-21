@@ -1,0 +1,19 @@
+.right-panel {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.panel-section {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.panel-section h3 {
+  margin: 0 0 15px 0;
+  color: #fff;
+}

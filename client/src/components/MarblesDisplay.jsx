@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics, useSphere, usePlane } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
+import './MarblesDisplay.css';
 
 function Marble({ position, color, opacity, size }) {
   const [ref] = useSphere(() => ({
@@ -99,7 +100,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', background: '#f5f5f5' }}>
+    <div className="marbles-container">
       <Canvas shadows camera={{ position: [0, 10, 15], fov: 45 }}>
         <color attach="background" args={['#f5f5f5']} />
         <ambientLight intensity={0.8} />

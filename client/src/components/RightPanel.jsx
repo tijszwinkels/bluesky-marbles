@@ -1,6 +1,7 @@
 import React from 'react';
 import Stats from './Stats';
 import Config from './Config';
+import './RightPanel.css';
 
 function RightPanel({ 
   stats, 

@@ -1,0 +1,20 @@
+.stats-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2196f3;
+}
+
+.stat-label {
+  color: #aaa;
+  font-size: 12px;
+}

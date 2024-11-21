@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatBytes } from '../utils/formatters';
+import './Stats.css';
 
 function Stats({ stats }) {
   return (
