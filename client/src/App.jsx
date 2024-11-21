@@ -85,7 +85,6 @@ function App() {
 
   return (
     <div className="container">
-      <h1>BlueSky Jetstream Visualization</h1>
       <div className="filter-container">
         <Filter value={filterTerm} onChange={handleFilterChange} />
       </div>

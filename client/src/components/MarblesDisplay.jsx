@@ -98,8 +98,8 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2 }) {
   };
 
   return (
-    <div style={{ height: '600px', width: '100%', background: '#f5f5f5' }}>
-      <Canvas shadows camera={{ position: [0, 5, 10], fov: 50 }}>
+    <div style={{ width: '100%', height: '100%', background: '#f5f5f5' }}>
+      <Canvas shadows camera={{ position: [0, 10, 15], fov: 45 }}>
         <color attach="background" args={['#f5f5f5']} />
         <ambientLight intensity={0.8} />
         <spotLight

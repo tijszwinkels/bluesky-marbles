@@ -3,7 +3,7 @@ import React from 'react';
 function Filter({ value, onChange }) {
   return (
     <div className="controls">
-      <input
+      <label>Global filter:</label> <input
         type="text"
         placeholder="Enter filter term"
         value={value}
