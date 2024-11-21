@@ -4,11 +4,13 @@ import Stats from './components/Stats';
 import Filter from './components/Filter';
 import LastTweet from './components/LastTweet';
 import MarblesDisplay from './components/MarblesDisplay';
+import Config from './components/Config';
 import './App.css';
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [filterTerm, setFilterTerm] = useState('');
+  const [timeout, setTimeout] = useState(60);
   const [stats, setStats] = useState({
     messagesPerSecond: 0,
     messagesPerMinute: 0,
@@ -57,6 +59,10 @@ function App() {
     setMessages([]);
   };
 
+  const handleTimeoutChange = (newTimeout) => {
+    setTimeout(newTimeout);
+  };
+
   return (
     <div className="container">
       <h1>BlueSky Jetstream Visualization</h1>
@@ -69,8 +75,13 @@ function App() {
       <div className="last-tweet">
         <LastTweet messages={messages} />
       </div>
-      <div className="marbles-container">
-        <MarblesDisplay messages={messages} />
+      <div className="visualization-row">
+        <div className="marbles-container">
+          <MarblesDisplay messages={messages} timeout={timeout} />
+        </div>
+        <div className="config-container">
+          <Config timeout={timeout} onTimeoutChange={handleTimeoutChange} />
+        </div>
       </div>
     </div>
   );

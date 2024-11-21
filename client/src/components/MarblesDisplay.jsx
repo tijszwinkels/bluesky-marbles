@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Physics, useSphere, usePlane } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 
-function Marble({ position, color }) {
+function Marble({ position, color, opacity }) {
   const [ref] = useSphere(() => ({
     mass: 1,
     position,
@@ -13,7 +13,13 @@ function Marble({ position, color }) {
   return (
     <mesh ref={ref} castShadow receiveShadow>
       <sphereGeometry args={[0.2, 32, 32]} />
-      <meshStandardMaterial color={color} metalness={0.3} roughness={0.2} />
+      <meshStandardMaterial 
+        color={color} 
+        metalness={0.3} 
+        roughness={0.2}
+        transparent={true}
+        opacity={opacity} 
+      />
     </mesh>
   );
 }
@@ -58,7 +64,7 @@ function Walls() {
   );
 }
 
-function MarblesDisplay({ messages }) {
+function MarblesDisplay({ messages, timeout = 60 }) {
   const [marbles, setMarbles] = useState([]);
 
   useEffect(() => {
@@ -75,12 +81,19 @@ function MarblesDisplay({ messages }) {
 
     setMarbles((prevMarbles) => [...prevMarbles, newMarble]);
 
-    // Remove marbles older than 1 minute
+    // Remove marbles older than timeout
     const now = Date.now();
     setMarbles((prevMarbles) =>
-      prevMarbles.filter((marble) => now - marble.timestamp < 60000)
+      prevMarbles.filter((marble) => now - marble.timestamp < timeout * 1000)
     );
-  }, [messages]);
+  }, [messages, timeout]);
+
+  // Calculate opacity based on remaining time
+  const getOpacity = (timestamp) => {
+    const age = Date.now() - timestamp;
+    const remainingTime = (timeout * 1000) - age;
+    return Math.max(0.2, remainingTime / (timeout * 1000));
+  };
 
   return (
     <div style={{ height: '600px', width: '100%', background: '#f5f5f5' }}>
@@ -108,6 +121,7 @@ function MarblesDisplay({ messages }) {
               key={marble.id}
               position={marble.position}
               color={marble.color}
+              opacity={getOpacity(marble.timestamp)}
             />
           ))}
         </Physics>
