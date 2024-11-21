@@ -14,6 +14,7 @@ function App() {
     return params.get('filter') || '';
   });
   const [timeout, setTimeout] = useState(60);
+  const [marbleSize, setMarbleSize] = useState(0.2);
   const [stats, setStats] = useState({
     messagesPerSecond: 0,
     messagesPerMinute: 0,
@@ -79,6 +80,10 @@ function App() {
     setTimeout(newTimeout);
   };
 
+  const handleMarbleSizeChange = (newSize) => {
+    setMarbleSize(newSize);
+  };
+
   return (
     <div className="container">
       <h1>BlueSky Jetstream Visualization</h1>
@@ -93,10 +98,15 @@ function App() {
       </div>
       <div className="visualization-row">
         <div className="marbles-container">
-          <MarblesDisplay messages={messages} timeout={timeout} />
+          <MarblesDisplay messages={messages} timeout={timeout} marbleSize={marbleSize} />
         </div>
         <div className="config-container">
-          <Config timeout={timeout} onTimeoutChange={handleTimeoutChange} />
+          <Config 
+            timeout={timeout} 
+            onTimeoutChange={handleTimeoutChange}
+            marbleSize={marbleSize}
+            onMarbleSizeChange={handleMarbleSizeChange}
+          />
         </div>
       </div>
     </div>

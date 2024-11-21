@@ -3,16 +3,16 @@ import { Canvas } from '@react-three/fiber';
 import { Physics, useSphere, usePlane } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 
-function Marble({ position, color, opacity }) {
+function Marble({ position, color, opacity, size }) {
   const [ref] = useSphere(() => ({
     mass: 1,
     position,
-    args: [0.2], // Radius of the sphere
+    args: [size], // Radius of the sphere
   }));
 
   return (
     <mesh ref={ref} castShadow receiveShadow>
-      <sphereGeometry args={[0.2, 32, 32]} />
+      <sphereGeometry args={[size, 32, 32]} />
       <meshStandardMaterial 
         color={color} 
         metalness={0.3} 
@@ -64,7 +64,7 @@ function Walls() {
   );
 }
 
-function MarblesDisplay({ messages, timeout = 60 }) {
+function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2 }) {
   const [marbles, setMarbles] = useState([]);
   const marbleCountRef = useRef(0);
 
@@ -124,6 +124,7 @@ function MarblesDisplay({ messages, timeout = 60 }) {
               position={marble.position}
               color={marble.color}
               opacity={getOpacity(marble.timestamp)}
+              size={marbleSize}
             />
           ))}
         </Physics>
