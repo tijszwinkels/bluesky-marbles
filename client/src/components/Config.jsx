@@ -7,7 +7,9 @@ function Config({
   marbleSize, 
   onMarbleSizeChange,
   fadeEnabled,
-  onFadeChange
+  onFadeChange,
+  fraction,
+  onFractionChange
 }) {
   const handleTimeoutSliderChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -30,6 +32,18 @@ function Config({
     const value = parseFloat(e.target.value);
     if (!isNaN(value) && value >= 0.1 && value <= 2.0) {
       onMarbleSizeChange(value);
+    }
+  };
+
+  const handleFractionSliderChange = (e) => {
+    const value = parseFloat(e.target.value);
+    onFractionChange(value);
+  };
+
+  const handleFractionInputChange = (e) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value) && value >= 0.01 && value <= 1.0) {
+      onFractionChange(value);
     }
   };
 
@@ -80,6 +94,29 @@ function Config({
             step="0.1"
             value={marbleSize}
             onChange={handleMarbleSizeInputChange}
+            className="config-input"
+          />
+        </div>
+      </div>
+      <div className="config-item">
+        <label>Message Fraction</label>
+        <div className="config-controls">
+          <input
+            type="range"
+            min="0.01"
+            max="1.0"
+            step="0.01"
+            value={fraction}
+            onChange={handleFractionSliderChange}
+            className="config-slider"
+          />
+          <input
+            type="number"
+            min="0.01"
+            max="1.0"
+            step="0.01"
+            value={fraction}
+            onChange={handleFractionInputChange}
             className="config-input"
           />
         </div>

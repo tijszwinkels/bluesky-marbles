@@ -12,6 +12,8 @@ function RightPanel({
   onMarbleSizeChange,
   fadeEnabled,
   onFadeChange,
+  fraction,
+  onFractionChange,
   selectedWords,
   onWordSelect,
   onWordHide,
@@ -38,6 +40,8 @@ function RightPanel({
           onMarbleSizeChange={onMarbleSizeChange}
           fadeEnabled={fadeEnabled}
           onFadeChange={onFadeChange}
+          fraction={fraction}
+          onFractionChange={onFractionChange}
         />
       </div>
     </div>

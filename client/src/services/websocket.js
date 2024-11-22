@@ -1,8 +1,9 @@
 class WebSocketService {
-  constructor(url, onMessage, timeout = 60) {
+  constructor(url, onMessage, timeout = 60, fraction = 1.0) {
     this.url = url;
     this.onMessage = onMessage;
     this.timeout = timeout * 1000; // Convert seconds to milliseconds
+    this.fraction = fraction;
     this.ws = null;
     this.messageStats = {
       all: {
@@ -22,6 +23,10 @@ class WebSocketService {
     this.timeout = seconds * 1000;
   }
 
+  setFraction(fraction) {
+    this.fraction = fraction;
+  }
+
   setFilter(term) {
     this.filterTerm = term.toLowerCase();
     // Reset filtered stats and word frequencies when filter changes
@@ -33,6 +38,12 @@ class WebSocketService {
   }
 
   shouldIncludeMessage(data) {
+    // First check if we should randomly drop this message
+    if (Math.random() > this.fraction) {
+      return false;
+    }
+    
+    // Then check if it matches the filter
     if (!this.filterTerm) return true;
     const text = data.commit?.record?.text;
     return text && text.toLowerCase().includes(this.filterTerm);
@@ -133,7 +144,7 @@ class WebSocketService {
       this.messageStats.all.messages.push(now);
       this.messageStats.all.bytes.push({ timestamp: now, size: byteSize });
 
-      // Check if message passes filter
+      // Check if message passes filter and fraction
       if (this.shouldIncludeMessage(data)) {
         // Record in filtered stats
         this.messageStats.filtered.messages.push(now);
@@ -152,7 +163,7 @@ class WebSocketService {
       // Call the onMessage callback with the data and stats
       if (this.shouldIncludeMessage(data)) {
         this.onMessage(data, stats);
-      } else if (!this.filterTerm) {
+      } else if (!this.filterTerm && Math.random() <= this.fraction) {
         this.onMessage(data, stats);
       } else {
         this.onMessage(null, stats);

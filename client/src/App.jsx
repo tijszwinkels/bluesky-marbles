@@ -22,6 +22,10 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     return parseFloat(params.get('size')) || 0.2;
   });
+  const [fraction, setFraction] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return parseFloat(params.get('fraction')) || 1.0;
+  });
   const [fadeEnabled, setFadeEnabled] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('fade') !== 'false';
@@ -68,11 +72,12 @@ function App() {
   };
 
   useEffect(() => {
-    // Initialize WebSocket service with timeout
+    // Initialize WebSocket service with timeout and fraction
     const wsService = new WebSocketService(
       'wss://jetstream2.us-west.bsky.network/subscribe?wantedCollections=app.bsky.feed.post',
       handleMessage,
-      timeout
+      timeout,
+      fraction
     );
 
     // Store reference
@@ -98,6 +103,13 @@ function App() {
       wsRef.current.setTimeout(timeout);
     }
   }, [timeout]);
+
+  // Update fraction in WebSocket service when it changes
+  useEffect(() => {
+    if (wsRef.current) {
+      wsRef.current.setFraction(fraction);
+    }
+  }, [fraction]);
 
   const updateURL = (updates) => {
     const url = new URL(window.location);
@@ -143,6 +155,11 @@ function App() {
     updateURL({ size: newSize });
   };
 
+  const handleFractionChange = (newFraction) => {
+    setFraction(newFraction);
+    updateURL({ fraction: newFraction });
+  };
+
   const handleFadeChange = (enabled) => {
     setFadeEnabled(enabled);
     updateURL({ fade: enabled ? null : 'false' }); // Only add to URL when disabled
@@ -175,6 +192,8 @@ function App() {
         onTimeoutChange={handleTimeoutChange}
         marbleSize={marbleSize}
         onMarbleSizeChange={handleMarbleSizeChange}
+        fraction={fraction}
+        onFractionChange={handleFractionChange}
         fadeEnabled={fadeEnabled}
         onFadeChange={handleFadeChange}
         selectedWords={selectedWords}
