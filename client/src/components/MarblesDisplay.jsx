@@ -77,7 +77,6 @@ function Ground() {
   return (
     <mesh ref={ref} receiveShadow>
       <planeGeometry args={[10, 10]} />
-      <meshStandardMaterial color="#ffffff" />
     </mesh>
   );
 }
@@ -101,7 +100,7 @@ function VisualWall({ position, rotation, args }) {
       <meshPhysicalMaterial 
         color="#ffffff"
         transparent={true}
-        opacity={0.3}
+        opacity={0.2}
         roughness={0}
         metalness={0.1}
         transmission={0.9}
