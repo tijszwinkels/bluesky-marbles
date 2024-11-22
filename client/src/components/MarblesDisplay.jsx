@@ -110,12 +110,12 @@ function VaseWall({ position, rotation, args }) {
 function Vase() {
   const height = 11;
   const thickness = 0.2;
-  const bottomWidth = 4;
-  const topWidth = 6;
+  const bottomWidth = 6;
+  const topWidth = 8;
   const wallHeight = height;
 
   return (
-    <group position={[0, 4, 0]}>
+    <group position={[0, height/2, 0]}>
       <VaseWall 
         position={[0, 0, topWidth/2]} 
         rotation={[0.2, 0, 0]}
@@ -174,7 +174,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
     const newMarble = {
       id: `marble-${Date.now()}-${marbleCountRef.current}`,
       timestamp: Date.now(),
-      position: [Math.random() * 4 - 2, 12, Math.random() * 4 - 2],
+      position: [Math.random() * 5 - 2, 15, Math.random() * 5 - 2],
       color: marbleColor,
     };
 
@@ -192,7 +192,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
     if (!fadeEnabled) return 1;
     const age = Date.now() - timestamp;
     const remainingTime = (timeout * 1000) - age;
-    return Math.max(0.2, remainingTime / (timeout * 1000));
+    return Math.max(0.1, remainingTime / (timeout * 1000));
   };
 
   // Calculate camera position with 30° offset
