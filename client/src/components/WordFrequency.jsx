@@ -2,10 +2,20 @@ import React from 'react';
 import './WordFrequency.css';
 
 function WordFrequency({ wordFrequencies, selectedWords, onWordSelect, onWordHide, hiddenWords }) {
-  const topWords = [...wordFrequencies.entries()]
-    .filter(([word]) => !hiddenWords.has(word))
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
+  const filteredWords = [...wordFrequencies.entries()]
+    .filter(([word]) => !hiddenWords.has(word));
+
+  // Separate selected and non-selected words
+  const selectedEntries = filteredWords.filter(([word]) => selectedWords.has(word));
+  const nonSelectedEntries = filteredWords.filter(([word]) => !selectedWords.has(word));
+
+  // Sort both groups by frequency
+  const sortByFrequency = (a, b) => b[1] - a[1];
+  const sortedSelected = selectedEntries.sort(sortByFrequency);
+  const sortedNonSelected = nonSelectedEntries.sort(sortByFrequency);
+
+  // Combine the sorted groups with selected words at the top
+  const topWords = [...sortedSelected, ...sortedNonSelected].slice(0, 10);
 
   const handleWordClick = (e, word) => {
     // Only handle clicks on the word item, not the delete button
