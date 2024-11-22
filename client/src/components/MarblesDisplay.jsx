@@ -61,7 +61,7 @@ function Marble({ position, color, opacity, size }) {
         opacity={opacity}
         roughness={0}
         metalness={0.1}
-        transmission={0.9}
+        transmission={0.3}
         thickness={0.5}
       />
     </mesh>
@@ -188,13 +188,13 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
     
     // Determine marble color:
     // - If no words are selected, use random color
-    // - If words are selected but none match, use blueish gray
+    // - If words are selected but none match, use white
     // - If words match, blend their colors
     let marbleColor;
     if (selectedWords.size === 0) {
       marbleColor = generateRandomColor();
     } else if (matchingWords.length === 0) {
-      marbleColor = '#6b7c93'; // Blueish gray
+      marbleColor = '#efefff';
     } else {
       marbleColor = blendColors(matchingWords.map(word => selectedWords.get(word)));
     }
