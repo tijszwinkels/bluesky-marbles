@@ -17,6 +17,14 @@ class WebSocketService {
     };
     this.wordOccurrences = new Map(); // Map<word, timestamp[]>
     this.filterTerm = '';
+    this.wordsToSkip = new Set([
+      'about', 'after', 'again', 'could', 'every', 'first', 'found', 'great',
+      'large', 'never', 'other', 'place', 'point', 'right',
+      'small', 'sound', 'still', 'their', 'there', 'these', 'thing',
+      'think', 'three', 'water', 'where', 'which', 'world', 'would',
+      'people', 'should', 'because', 'between', 'choose', 'always', 'literally',
+      'through'
+    ]);
   }
 
   setTimeout(seconds) {
@@ -56,7 +64,8 @@ class WebSocketService {
         .split(/\s+/)
         .filter(word => 
           word.length > 4 && 
-          word.split('').every(char => char >= 'a' && char <= 'z')
+          word.split('').every(char => char >= 'a' && char <= 'z') &&
+          !this.wordsToSkip.has(word)
         )
     );
     
