@@ -84,13 +84,9 @@ Example:
 http://localhost:5173/?filter=tech&timeout=30&size=0.3&words=love:ff0000,hate:0000ff
 ```
 
-## Contributing
+## Credit
 
-Feel free to open issues or submit pull requests with improvements. Some areas that could be enhanced:
-- Additional visualization modes
-- More post analysis features
-- Performance optimizations
-- UI/UX improvements
+This software has been written almost entirely with [Cline](https://github.com/cline/cline) & [Claude Sonnet](https://www.anthropic.com/claude/sonnet).
 
 ## License
 
