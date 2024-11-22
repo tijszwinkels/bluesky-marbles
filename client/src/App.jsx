@@ -8,7 +8,19 @@ import './App.css';
 
 function App() {
   const [messages, setMessages] = useState([]);
-  const [selectedWords, setSelectedWords] = useState(new Map()); // Map of word -> color
+  const [selectedWords, setSelectedWords] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const wordsParam = params.get('words');
+    if (wordsParam) {
+      return new Map(
+        wordsParam.split(',').map(pair => {
+          const [word, color] = pair.split(':');
+          return [decodeURIComponent(word), decodeURIComponent(color)];
+        })
+      );
+    }
+    return new Map();
+  });
   const [hiddenWords, setHiddenWords] = useState(new Set()); // Set of hidden words
   const [customWords, setCustomWords] = useState(new Map()); // Map of word -> frequency
   const [filterTerm, setFilterTerm] = useState(() => {
@@ -66,6 +78,18 @@ function App() {
       return next;
     });
   };
+
+  // Update URL when selected words change
+  useEffect(() => {
+    if (selectedWords.size > 0) {
+      const wordsString = Array.from(selectedWords.entries())
+        .map(([word, color]) => `${encodeURIComponent(word)}:${encodeURIComponent(color)}`)
+        .join(',');
+      updateURL({ words: wordsString });
+    } else {
+      updateURL({ words: null });
+    }
+  }, [selectedWords]);
 
   const handleWordHide = (word) => {
     setHiddenWords(prev => {
