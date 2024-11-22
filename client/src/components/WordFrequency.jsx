@@ -1,16 +1,22 @@
 import React from 'react';
 import './WordFrequency.css';
 
-function WordFrequency({ wordFrequencies, selectedWords, onWordSelect }) {
+function WordFrequency({ wordFrequencies, selectedWords, onWordSelect, onWordHide, hiddenWords }) {
   const topWords = [...wordFrequencies.entries()]
+    .filter(([word]) => !hiddenWords.has(word))
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  const handleWordClick = (word, e) => {
-    // Prevent click from triggering if delete button was clicked
-    if (e.target.className !== 'delete-button') {
+  const handleWordClick = (e, word) => {
+    // Only handle clicks on the word item, not the delete button
+    if (!e.target.closest('.delete-button')) {
       onWordSelect(word);
     }
+  };
+
+  const handleDeleteClick = (e, word) => {
+    e.stopPropagation();
+    onWordHide(word);
   };
 
   return (
@@ -21,7 +27,7 @@ function WordFrequency({ wordFrequencies, selectedWords, onWordSelect }) {
           <div 
             key={word} 
             className={`word-item ${selectedWords.has(word) ? 'selected' : ''}`}
-            onClick={(e) => handleWordClick(word, e)}
+            onClick={(e) => handleWordClick(e, word)}
             style={{
               backgroundColor: selectedWords.has(word) 
                 ? `${selectedWords.get(word)}15` // Add transparency to background
@@ -47,7 +53,7 @@ function WordFrequency({ wordFrequencies, selectedWords, onWordSelect }) {
             </div>
             <button 
               className="delete-button" 
-              onClick={() => onWordSelect(word)}
+              onClick={(e) => handleDeleteClick(e, word)}
               aria-label={`Hide ${word}`}
             />
           </div>

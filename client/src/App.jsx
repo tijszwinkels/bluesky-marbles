@@ -9,6 +9,7 @@ import './App.css';
 function App() {
   const [messages, setMessages] = useState([]);
   const [selectedWords, setSelectedWords] = useState(new Map()); // Map of word -> color
+  const [hiddenWords, setHiddenWords] = useState(new Set()); // Set of hidden words
   const [filterTerm, setFilterTerm] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('filter') || '';
@@ -48,6 +49,20 @@ function App() {
       } else {
         next.set(word, generateColor());
       }
+      return next;
+    });
+  };
+
+  const handleWordHide = (word) => {
+    setHiddenWords(prev => {
+      const next = new Set(prev);
+      next.add(word);
+      return next;
+    });
+    // Also remove from selected if it was selected
+    setSelectedWords(prev => {
+      const next = new Map(prev);
+      next.delete(word);
       return next;
     });
   };
@@ -164,6 +179,8 @@ function App() {
         onFadeChange={handleFadeChange}
         selectedWords={selectedWords}
         onWordSelect={handleWordSelect}
+        onWordHide={handleWordHide}
+        hiddenWords={hiddenWords}
       />
     </div>
   );

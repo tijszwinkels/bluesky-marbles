@@ -13,7 +13,9 @@ function RightPanel({
   fadeEnabled,
   onFadeChange,
   selectedWords,
-  onWordSelect
+  onWordSelect,
+  onWordHide,
+  hiddenWords
 }) {
   return (
     <div className="right-panel">
@@ -25,6 +27,8 @@ function RightPanel({
         wordFrequencies={stats.wordFrequencies || new Map()} 
         selectedWords={selectedWords}
         onWordSelect={onWordSelect}
+        onWordHide={onWordHide}
+        hiddenWords={hiddenWords}
       />
       <div className="panel-section">
         <Config 
