@@ -2,6 +2,28 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 400px;  /* Fixed height */
+  overflow-y: auto;   /* Add scrollbar when content overflows */
+  padding-right: 8px; /* Add padding for scrollbar */
+}
+
+/* Style the scrollbar */
+.word-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.word-list::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.word-list::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+.word-list::-webkit-scrollbar-thumb:hover {
+  background: #444;
 }
 
 .word-item {

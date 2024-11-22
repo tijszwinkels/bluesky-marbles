@@ -14,8 +14,8 @@ function WordFrequency({ wordFrequencies, selectedWords, onWordSelect, onWordHid
   const sortedSelected = selectedEntries.sort(sortByFrequency);
   const sortedNonSelected = nonSelectedEntries.sort(sortByFrequency);
 
-  // Combine the sorted groups with selected words at the top
-  const topWords = [...sortedSelected, ...sortedNonSelected].slice(0, 10);
+  // Combine the sorted groups with selected words at the top, now showing up to 100 words
+  const topWords = [...sortedSelected, ...sortedNonSelected].slice(0, 100);
 
   const handleWordClick = (e, word) => {
     // Only handle clicks on the word item, not the delete button
