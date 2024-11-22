@@ -39,6 +39,12 @@ function blendColors(colors) {
   return `#${blended.map(v => v.toString(16).padStart(2, '0')).join('')}`;
 }
 
+// Generate a random color
+function generateRandomColor() {
+  const hue = Math.random() * 360;
+  return `hsl(${hue}, 70%, 50%)`;
+}
+
 function Marble({ position, color, opacity, size }) {
   const [ref] = useSphere(() => ({
     mass: 1,
@@ -152,10 +158,18 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
           .filter(word => messageText.toLowerCase().includes(word.toLowerCase()))
       : [];
     
-    // Blend colors of matching words or use gray if none match
-    const marbleColor = matchingWords.length > 0
-      ? blendColors(matchingWords.map(word => selectedWords.get(word)))
-      : '#808080';
+    // Determine marble color:
+    // - If no words are selected, use random color
+    // - If words are selected but none match, use blueish gray
+    // - If words match, blend their colors
+    let marbleColor;
+    if (selectedWords.size === 0) {
+      marbleColor = generateRandomColor();
+    } else if (matchingWords.length === 0) {
+      marbleColor = '#6b7c93'; // Blueish gray
+    } else {
+      marbleColor = blendColors(matchingWords.map(word => selectedWords.get(word)));
+    }
 
     const newMarble = {
       id: `marble-${Date.now()}-${marbleCountRef.current}`,
