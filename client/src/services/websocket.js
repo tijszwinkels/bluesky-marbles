@@ -23,7 +23,8 @@ class WebSocketService {
       'small', 'sound', 'still', 'their', 'there', 'these', 'thing',
       'think', 'three', 'water', 'where', 'which', 'world', 'would',
       'people', 'should', 'because', 'between', 'choose', 'always', 'literally',
-      'through'
+      'through', 'basically', 'really', 'being', 'those', 'going', 'might',
+      'during', 'another'
     ]);
   }
 
@@ -64,7 +65,7 @@ class WebSocketService {
         .split(/\s+/)
         .filter(word => 
           word.length > 4 && 
-          word.split('').every(char => char >= 'a' && char <= 'z') &&
+          word.split('').every(char => char == "#" || char >= 'a' && char <= 'z') &&
           !this.wordsToSkip.has(word)
         )
     );
