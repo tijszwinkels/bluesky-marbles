@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './WordFrequency.css';
 
-function WordFrequency({ wordFrequencies, selectedWords, onWordSelect, onWordHide, hiddenWords }) {
+function WordFrequency({ wordFrequencies, selectedWords, onWordSelect, onWordHide, hiddenWords, onAddCustomWord }) {
+  const [newWord, setNewWord] = useState('');
+
   const filteredWords = [...wordFrequencies.entries()]
     .filter(([word]) => !hiddenWords.has(word));
 
@@ -29,9 +31,35 @@ function WordFrequency({ wordFrequencies, selectedWords, onWordSelect, onWordHid
     onWordHide(word);
   };
 
+  const handleAddWord = (e) => {
+    if (e.key === 'Enter' && newWord.trim()) {
+      const word = newWord.trim().toLowerCase();
+      if (!hiddenWords.has(word)) {
+        if (wordFrequencies.has(word)) {
+          // If word exists, just select it
+          onWordSelect(word);
+        } else {
+          // If it's a new word, add it as custom word
+          onAddCustomWord(word);
+        }
+      }
+      setNewWord('');
+    }
+  };
+
   return (
     <div className="panel-section">
       <h3>Word Frequency</h3>
+      <div className="word-input-container">
+        <input
+          type="text"
+          className="word-input"
+          value={newWord}
+          onChange={(e) => setNewWord(e.target.value)}
+          onKeyDown={handleAddWord}
+          placeholder="Add new word..."
+        />
+      </div>
       <div className="word-list">
         {topWords.map(([word, count]) => (
           <div 

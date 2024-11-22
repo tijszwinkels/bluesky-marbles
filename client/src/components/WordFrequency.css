@@ -7,6 +7,27 @@
   padding-right: 8px; /* Add padding for scrollbar */
 }
 
+.word-input-container {
+  margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.word-input {
+  flex: 1;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.word-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
 /* Style the scrollbar */
 .word-list::-webkit-scrollbar {
   width: 8px;

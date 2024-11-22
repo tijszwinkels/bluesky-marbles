@@ -19,7 +19,8 @@ function RightPanel({
   onWordHide,
   hiddenWords,
   onlySelectedWords,
-  onOnlySelectedWordsChange
+  onOnlySelectedWordsChange,
+  onAddCustomWord
 }) {
   return (
     <div className="right-panel">
@@ -33,6 +34,7 @@ function RightPanel({
         onWordSelect={onWordSelect}
         onWordHide={onWordHide}
         hiddenWords={hiddenWords}
+        onAddCustomWord={onAddCustomWord}
       />
       <div className="panel-section">
         <Config 

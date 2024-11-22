@@ -10,6 +10,7 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [selectedWords, setSelectedWords] = useState(new Map()); // Map of word -> color
   const [hiddenWords, setHiddenWords] = useState(new Set()); // Set of hidden words
+  const [customWords, setCustomWords] = useState(new Map()); // Map of word -> frequency
   const [filterTerm, setFilterTerm] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('filter') || '';
@@ -73,11 +74,38 @@ function App() {
       next.delete(word);
       return next;
     });
+    // Remove from custom words if it was a custom word
+    setCustomWords(prev => {
+      const next = new Map(prev);
+      next.delete(word);
+      return next;
+    });
+  };
+
+  const handleAddCustomWord = (word) => {
+    setCustomWords(prev => {
+      const next = new Map(prev);
+      if (!next.has(word)) {
+        next.set(word, 0);
+        // Automatically select the word
+        handleWordSelect(word);
+      }
+      return next;
+    });
   };
 
   const handleMessage = useCallback((data, newStats) => {
     // Update stats regardless of whether we received a message
-    setStats(newStats);
+    setStats(prev => {
+      // Merge custom words with websocket word frequencies
+      const mergedFrequencies = new Map(newStats.wordFrequencies || new Map());
+      customWords.forEach((freq, word) => {
+        if (!mergedFrequencies.has(word)) {
+          mergedFrequencies.set(word, freq);
+        }
+      });
+      return { ...newStats, wordFrequencies: mergedFrequencies };
+    });
 
     // Only add message if we received one (filtered messages won't be passed)
     if (data) {
@@ -105,7 +133,7 @@ function App() {
 
       setMessages(prevMessages => [...prevMessages, data]);
     }
-  }, [onlySelectedWords, selectedWords]);
+  }, [onlySelectedWords, selectedWords, customWords]);
 
   // Initialize WebSocket service once
   useEffect(() => {
@@ -237,6 +265,7 @@ function App() {
         onWordSelect={handleWordSelect}
         onWordHide={handleWordHide}
         hiddenWords={hiddenWords}
+        onAddCustomWord={handleAddCustomWord}
       />
     </div>
   );
