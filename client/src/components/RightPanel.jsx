@@ -17,7 +17,9 @@ function RightPanel({
   selectedWords,
   onWordSelect,
   onWordHide,
-  hiddenWords
+  hiddenWords,
+  onlySelectedWords,
+  onOnlySelectedWordsChange
 }) {
   return (
     <div className="right-panel">
@@ -42,6 +44,8 @@ function RightPanel({
           onFadeChange={onFadeChange}
           fraction={fraction}
           onFractionChange={onFractionChange}
+          onlySelectedWords={onlySelectedWords}
+          onOnlySelectedWordsChange={onOnlySelectedWordsChange}
         />
       </div>
     </div>

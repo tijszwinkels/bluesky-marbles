@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import WebSocketService from './services/websocket';
 import Filter from './components/Filter';
 import LastTweet from './components/LastTweet';
@@ -29,6 +29,10 @@ function App() {
   const [fadeEnabled, setFadeEnabled] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('fade') !== 'false';
+  });
+  const [onlySelectedWords, setOnlySelectedWords] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('onlySelected') === 'true';
   });
   const [stats, setStats] = useState({
     messagesPerSecond: 0,
@@ -71,8 +75,40 @@ function App() {
     });
   };
 
+  const handleMessage = useCallback((data, newStats) => {
+    // Update stats regardless of whether we received a message
+    setStats(newStats);
+
+    // Only add message if we received one (filtered messages won't be passed)
+    if (data) {
+      const messageText = data?.commit?.record?.text;
+      
+      // If onlySelectedWords is enabled and we have selected words,
+      // only show messages that contain at least one selected word
+      if (onlySelectedWords && selectedWords.size > 0) {
+        // Skip if there's no message text
+        if (!messageText) {
+          return;
+        }
+
+        const selectedWordsList = Array.from(selectedWords.keys());
+        const messageLower = messageText.toLowerCase();
+        
+        const hasSelectedWord = selectedWordsList.some(word => 
+          messageLower.includes(word.toLowerCase())
+        );
+        
+        if (!hasSelectedWord) {
+          return; // Skip this message
+        }
+      }
+
+      setMessages(prevMessages => [...prevMessages, data]);
+    }
+  }, [onlySelectedWords, selectedWords]);
+
+  // Initialize WebSocket service once
   useEffect(() => {
-    // Initialize WebSocket service with timeout and fraction
     const wsService = new WebSocketService(
       'wss://jetstream2.us-west.bsky.network/subscribe?wantedCollections=app.bsky.feed.post',
       handleMessage,
@@ -80,22 +116,24 @@ function App() {
       fraction
     );
 
-    // Store reference
     wsRef.current = wsService;
-
-    // Connect to WebSocket
     wsService.connect();
 
-    // Set initial filter if present in URL
     if (filterTerm) {
       wsService.setFilter(filterTerm);
     }
 
-    // Cleanup on unmount
     return () => {
       wsService.disconnect();
     };
-  }, []);
+  }, []); // Empty dependency array - only initialize once
+
+  // Update the message handler when it changes
+  useEffect(() => {
+    if (wsRef.current) {
+      wsRef.current.onMessage = handleMessage;
+    }
+  }, [handleMessage]);
 
   // Update timeout in WebSocket service when it changes
   useEffect(() => {
@@ -121,16 +159,6 @@ function App() {
       }
     });
     window.history.pushState({}, '', url);
-  };
-
-  const handleMessage = (data, newStats) => {
-    // Update stats regardless of whether we received a message
-    setStats(newStats);
-
-    // Only add message if we received one (filtered messages won't be passed)
-    if (data) {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    }
   };
 
   const handleFilterChange = (newFilterTerm) => {
@@ -165,6 +193,13 @@ function App() {
     updateURL({ fade: enabled ? null : 'false' }); // Only add to URL when disabled
   };
 
+  const handleOnlySelectedWordsChange = (enabled) => {
+    setOnlySelectedWords(enabled);
+    updateURL({ onlySelected: enabled ? 'true' : null }); // Only add to URL when enabled
+    // Clear existing messages when toggling this option
+    setMessages([]);
+  };
+
   return (
     <div className="container">
       <div className="main-content">
@@ -196,6 +231,8 @@ function App() {
         onFractionChange={handleFractionChange}
         fadeEnabled={fadeEnabled}
         onFadeChange={handleFadeChange}
+        onlySelectedWords={onlySelectedWords}
+        onOnlySelectedWordsChange={handleOnlySelectedWordsChange}
         selectedWords={selectedWords}
         onWordSelect={handleWordSelect}
         onWordHide={handleWordHide}

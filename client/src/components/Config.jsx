@@ -9,7 +9,9 @@ function Config({
   fadeEnabled,
   onFadeChange,
   fraction,
-  onFractionChange
+  onFractionChange,
+  onlySelectedWords,
+  onOnlySelectedWordsChange
 }) {
   const handleTimeoutSliderChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -49,6 +51,10 @@ function Config({
 
   const handleFadeChange = (e) => {
     onFadeChange(e.target.checked);
+  };
+
+  const handleOnlySelectedWordsChange = (e) => {
+    onOnlySelectedWordsChange(e.target.checked);
   };
 
   return (
@@ -122,15 +128,26 @@ function Config({
         </div>
       </div>
       <div className="config-item">
-        <label className="checkbox-label">
-          <input
-            type="checkbox"
-            checked={fadeEnabled}
-            onChange={handleFadeChange}
-            className="config-checkbox"
-          />
-          Enable Fade Effect
-        </label>
+        <div className="checkbox-group">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={fadeEnabled}
+              onChange={handleFadeChange}
+              className="config-checkbox"
+            />
+            Enable Fade Effect
+          </label>
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={onlySelectedWords}
+              onChange={handleOnlySelectedWordsChange}
+              className="config-checkbox"
+            />
+            Only Selected Words
+          </label>
+        </div>
       </div>
     </div>
   );
