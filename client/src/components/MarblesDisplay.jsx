@@ -82,16 +82,21 @@ function Ground() {
   );
 }
 
-function VaseWall({ position, rotation, args }) {
+// Separate components for physics and visual walls
+function PhysicsWall({ position, args }) {
   const [ref] = useBox(() => ({
     args,
     position,
-    rotation,
+    rotation: [0, 0, 0], // Keep physics walls straight
     type: 'Static',
   }));
 
+  return null; // No visual representation for physics walls
+}
+
+function VisualWall({ position, rotation, args }) {
   return (
-    <mesh ref={ref}>
+    <mesh position={position} rotation={rotation}>
       <boxGeometry args={args} />
       <meshPhysicalMaterial 
         color="#ffffff"
@@ -110,31 +115,54 @@ function VaseWall({ position, rotation, args }) {
 function Vase() {
   const height = 11;
   const thickness = 0.2;
-  const bottomWidth = 6;
   const topWidth = 8;
   const wallHeight = height;
+  const angle = 0.2;
+  
+  // Slightly smaller physics container to ensure marbles stay inside
+  const physicsWidth = topWidth - 0.4;
+  const physicsHeight = height - 0.2;
 
   return (
     <group position={[0, height/2, 0]}>
-      <VaseWall 
+      {/* Visual walls - tilted for aesthetics */}
+      <VisualWall 
         position={[0, 0, topWidth/2]} 
-        rotation={[0.2, 0, 0]}
+        rotation={[angle, 0, 0]}
         args={[topWidth, wallHeight, thickness]}
       />
-      <VaseWall 
+      <VisualWall 
         position={[0, 0, -topWidth/2]} 
-        rotation={[-0.2, 0, 0]}
+        rotation={[-angle, 0, 0]}
         args={[topWidth, wallHeight, thickness]}
       />
-      <VaseWall 
+      <VisualWall 
         position={[-topWidth/2, 0, 0]} 
-        rotation={[0, 0, -0.2]}
+        rotation={[0, 0, -angle]}
         args={[thickness, wallHeight, topWidth]}
       />
-      <VaseWall 
+      <VisualWall 
         position={[topWidth/2, 0, 0]} 
-        rotation={[0, 0, 0.2]}
+        rotation={[0, 0, angle]}
         args={[thickness, wallHeight, topWidth]}
+      />
+
+      {/* Physics walls - straight and slightly inset */}
+      <PhysicsWall 
+        position={[0, 0, physicsWidth/2]} 
+        args={[physicsWidth, physicsHeight, thickness]}
+      />
+      <PhysicsWall 
+        position={[0, 0, -physicsWidth/2]} 
+        args={[physicsWidth, physicsHeight, thickness]}
+      />
+      <PhysicsWall 
+        position={[-physicsWidth/2, 0, 0]} 
+        args={[thickness, physicsHeight, physicsWidth]}
+      />
+      <PhysicsWall 
+        position={[physicsWidth/2, 0, 0]} 
+        args={[thickness, physicsHeight, physicsWidth]}
       />
     </group>
   );
