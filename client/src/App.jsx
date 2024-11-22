@@ -15,7 +15,7 @@ function App() {
       return new Map(
         wordsParam.split(',').map(pair => {
           const [word, color] = pair.split(':');
-          return [decodeURIComponent(word), decodeURIComponent(color)];
+          return [decodeURIComponent(word), `#${color}`];
         })
       );
     }
@@ -56,10 +56,54 @@ function App() {
 
   const wsRef = useRef(null);
 
+  // Convert HSL to short hex when possible
+  const hslToShortHex = (h, s, l) => {
+    // Convert HSL to RGB
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = l - c/2;
+    let r, g, b;
+    
+    if (h < 60) {
+      [r, g, b] = [c, x, 0];
+    } else if (h < 120) {
+      [r, g, b] = [x, c, 0];
+    } else if (h < 180) {
+      [r, g, b] = [0, c, x];
+    } else if (h < 240) {
+      [r, g, b] = [0, x, c];
+    } else if (h < 300) {
+      [r, g, b] = [x, 0, c];
+    } else {
+      [r, g, b] = [c, 0, x];
+    }
+
+    r = Math.round((r + m) * 255);
+    g = Math.round((g + m) * 255);
+    b = Math.round((b + m) * 255);
+
+    // Convert to hex
+    const toHex = (n) => {
+      const hex = Math.round(n).toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+
+    const hexR = toHex(r);
+    const hexG = toHex(g);
+    const hexB = toHex(b);
+
+    // Try to use short form if possible
+    if (hexR[0] === hexR[1] && hexG[0] === hexG[1] && hexB[0] === hexB[1]) {
+      return `#${hexR[0]}${hexG[0]}${hexB[0]}`;
+    }
+
+    return `#${hexR}${hexG}${hexB}`;
+  };
+
   // Generate a random color
   const generateColor = () => {
     const hue = Math.random() * 360;
-    return `hsl(${hue}, 70%, 50%)`;
+    return hslToShortHex(hue, 0.7, 0.5);
   };
 
   const handleWordSelect = (word, newColor) => {
@@ -83,7 +127,11 @@ function App() {
   useEffect(() => {
     if (selectedWords.size > 0) {
       const wordsString = Array.from(selectedWords.entries())
-        .map(([word, color]) => `${encodeURIComponent(word)}:${encodeURIComponent(color)}`)
+        .map(([word, color]) => {
+          // Remove the # from the color and encode the word
+          const cleanColor = color.replace('#', '');
+          return `${encodeURIComponent(word)}:${cleanColor}`;
+        })
         .join(',');
       updateURL({ words: wordsString });
     } else {

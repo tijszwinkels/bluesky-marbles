@@ -26,6 +26,7 @@ class WebSocketService {
       'through', 'basically', 'really', 'being', 'those', 'going', 'might',
       'during', 'another'
     ]);
+    this.wordsToAllow = new Set(['love', 'hate', 'sad']);
   }
 
   setTimeout(seconds) {
@@ -64,7 +65,7 @@ class WebSocketService {
       text.toLowerCase()
         .split(/\s+/)
         .filter(word => 
-          word.length > 4 && 
+          (word.length > 4 || this.wordsToAllow.has(word)) && 
           word.split('').every(char => char == "#" || char >= 'a' && char <= 'z') &&
           !this.wordsToSkip.has(word)
         )
