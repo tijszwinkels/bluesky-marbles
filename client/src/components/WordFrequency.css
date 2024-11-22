@@ -54,6 +54,7 @@
   padding: 4px 8px;
   background: #1a1a1a;
   border-radius: 4px;
+  position: relative;
 }
 
 .word-info {
@@ -113,4 +114,33 @@
 
 .delete-button:hover {
   background-color: #ff6666;
+}
+
+/* Color picker styles */
+.color-picker-container {
+  position: absolute;
+  left: -10px;
+  top: 100%;
+  margin-top: 4px;
+  z-index: 1000;
+  background: #1a1a1a;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  padding: 8px;
+}
+
+/* Add a hover effect on the color strip */
+.word-item.selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.word-item.selected:hover::before {
+  background-color: rgba(255, 255, 255, 0.2);
 }

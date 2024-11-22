@@ -50,12 +50,17 @@ function App() {
     return `hsl(${hue}, 70%, 50%)`;
   };
 
-  const handleWordSelect = (word) => {
+  const handleWordSelect = (word, newColor) => {
     setSelectedWords(prev => {
       const next = new Map(prev);
-      if (next.has(word)) {
+      if (next.has(word) && !newColor) {
+        // If word exists and no new color provided (toggle off)
         next.delete(word);
+      } else if (newColor) {
+        // If a new color is provided (from color picker)
+        next.set(word, newColor);
       } else {
+        // If word doesn't exist (new selection)
         next.set(word, generateColor());
       }
       return next;
