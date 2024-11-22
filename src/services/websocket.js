@@ -1,5 +1,5 @@
 class WebSocketService {
-  constructor(url, onMessage, timeout = 60, fraction = 1.0) {
+  constructor(url, onMessage, timeout = 60, fraction = 0.01) {
     this.url = url;
     this.onMessage = onMessage;
     this.timeout = timeout * 1000; // Convert seconds to milliseconds

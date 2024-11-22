@@ -167,7 +167,7 @@ function Vase() {
   );
 }
 
-function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled = true, selectedWords }) {
+function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled = true, selectedWords }) {
   const [marbles, setMarbles] = useState([]);
   const marbleCountRef = useRef(0);
 

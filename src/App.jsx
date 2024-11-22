@@ -33,11 +33,11 @@ function App() {
   });
   const [marbleSize, setMarbleSize] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return parseFloat(params.get('size')) || 0.2;
+    return parseFloat(params.get('size')) || 0.5;
   });
   const [fraction, setFraction] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return parseFloat(params.get('fraction')) || 1.0;
+    return parseFloat(params.get('fraction')) || 0.01;
   });
   const [fadeEnabled, setFadeEnabled] = useState(() => {
     const params = new URLSearchParams(window.location.search);
