@@ -8,6 +8,7 @@ import './App.css';
 
 function App() {
   const [messages, setMessages] = useState([]);
+  const [selectedWords, setSelectedWords] = useState(new Map()); // Map of word -> color
   const [filterTerm, setFilterTerm] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('filter') || '';
@@ -33,11 +34,30 @@ function App() {
 
   const wsRef = useRef(null);
 
+  // Generate a random color
+  const generateColor = () => {
+    const hue = Math.random() * 360;
+    return `hsl(${hue}, 70%, 50%)`;
+  };
+
+  const handleWordSelect = (word) => {
+    setSelectedWords(prev => {
+      const next = new Map(prev);
+      if (next.has(word)) {
+        next.delete(word);
+      } else {
+        next.set(word, generateColor());
+      }
+      return next;
+    });
+  };
+
   useEffect(() => {
-    // Initialize WebSocket service
+    // Initialize WebSocket service with timeout
     const wsService = new WebSocketService(
       'wss://jetstream2.us-west.bsky.network/subscribe?wantedCollections=app.bsky.feed.post',
-      handleMessage
+      handleMessage,
+      timeout
     );
 
     // Store reference
@@ -56,6 +76,13 @@ function App() {
       wsService.disconnect();
     };
   }, []);
+
+  // Update timeout in WebSocket service when it changes
+  useEffect(() => {
+    if (wsRef.current) {
+      wsRef.current.setTimeout(timeout);
+    }
+  }, [timeout]);
 
   const updateURL = (updates) => {
     const url = new URL(window.location);
@@ -122,6 +149,7 @@ function App() {
               timeout={timeout} 
               marbleSize={marbleSize}
               fadeEnabled={fadeEnabled}
+              selectedWords={selectedWords}
             />
           </div>
         </div>
@@ -134,6 +162,8 @@ function App() {
         onMarbleSizeChange={handleMarbleSizeChange}
         fadeEnabled={fadeEnabled}
         onFadeChange={handleFadeChange}
+        selectedWords={selectedWords}
+        onWordSelect={handleWordSelect}
       />
     </div>
   );

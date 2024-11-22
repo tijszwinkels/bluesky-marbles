@@ -11,7 +11,9 @@ function RightPanel({
   marbleSize, 
   onMarbleSizeChange,
   fadeEnabled,
-  onFadeChange
+  onFadeChange,
+  selectedWords,
+  onWordSelect
 }) {
   return (
     <div className="right-panel">
@@ -19,7 +21,11 @@ function RightPanel({
         <h3>Statistics</h3>
         <Stats stats={stats} />
       </div>
-      <WordFrequency wordFrequencies={stats.wordFrequencies || new Map()} />
+      <WordFrequency 
+        wordFrequencies={stats.wordFrequencies || new Map()} 
+        selectedWords={selectedWords}
+        onWordSelect={onWordSelect}
+      />
       <div className="panel-section">
         <Config 
           timeout={timeout} 

@@ -4,6 +4,41 @@ import { Physics, useSphere, usePlane, useBox } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 import './MarblesDisplay.css';
 
+// Helper function to blend colors
+function blendColors(colors) {
+  if (colors.length === 0) return '#808080'; // Default gray for no selected words
+  if (colors.length === 1) return colors[0];
+
+  // Convert colors to RGB
+  const rgbColors = colors.map(color => {
+    // Handle HSL colors
+    if (color.startsWith('hsl')) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, 1, 1);
+      const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+      return [r, g, b];
+    }
+    // Handle hex colors
+    const hex = color.replace('#', '');
+    return [
+      parseInt(hex.substr(0, 2), 16),
+      parseInt(hex.substr(2, 2), 16),
+      parseInt(hex.substr(4, 2), 16)
+    ];
+  });
+
+  // Average the RGB values
+  const blended = rgbColors.reduce(
+    (acc, [r, g, b]) => [acc[0] + r, acc[1] + g, acc[2] + b],
+    [0, 0, 0]
+  ).map(v => Math.round(v / colors.length));
+
+  // Convert back to hex
+  return `#${blended.map(v => v.toString(16).padStart(2, '0')).join('')}`;
+}
+
 function Marble({ position, color, opacity, size }) {
   const [ref] = useSphere(() => ({
     mass: 1,
@@ -75,25 +110,21 @@ function Vase() {
 
   return (
     <group position={[0, 4, 0]}>
-      {/* Front wall */}
       <VaseWall 
         position={[0, 0, topWidth/2]} 
         rotation={[0.2, 0, 0]}
         args={[topWidth, wallHeight, thickness]}
       />
-      {/* Back wall */}
       <VaseWall 
         position={[0, 0, -topWidth/2]} 
         rotation={[-0.2, 0, 0]}
         args={[topWidth, wallHeight, thickness]}
       />
-      {/* Left wall */}
       <VaseWall 
         position={[-topWidth/2, 0, 0]} 
         rotation={[0, 0, -0.2]}
         args={[thickness, wallHeight, topWidth]}
       />
-      {/* Right wall */}
       <VaseWall 
         position={[topWidth/2, 0, 0]} 
         rotation={[0, 0, 0.2]}
@@ -103,7 +134,7 @@ function Vase() {
   );
 }
 
-function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled = true }) {
+function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled = true, selectedWords }) {
   const [marbles, setMarbles] = useState([]);
   const marbleCountRef = useRef(0);
 
@@ -112,12 +143,25 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
 
     // Add a new marble for the latest message
     const lastMessage = messages[messages.length - 1];
+    const messageText = lastMessage?.commit?.record?.text;
     marbleCountRef.current += 1;
+
+    // Find which selected words appear in the message
+    const matchingWords = messageText 
+      ? Array.from(selectedWords.keys())
+          .filter(word => messageText.toLowerCase().includes(word.toLowerCase()))
+      : [];
+    
+    // Blend colors of matching words or use gray if none match
+    const marbleColor = matchingWords.length > 0
+      ? blendColors(matchingWords.map(word => selectedWords.get(word)))
+      : '#808080';
+
     const newMarble = {
-      id: `marble-${Date.now()}-${marbleCountRef.current}`, // Ensure unique ID
+      id: `marble-${Date.now()}-${marbleCountRef.current}`,
       timestamp: Date.now(),
-      position: [Math.random() * 4 - 2, 12, Math.random() * 4 - 2], // Random position at the top
-      color: '#' + Math.floor(Math.random() * 16777215).toString(16), // Random color
+      position: [Math.random() * 4 - 2, 12, Math.random() * 4 - 2],
+      color: marbleColor,
     };
 
     setMarbles((prevMarbles) => [...prevMarbles, newMarble]);
@@ -127,7 +171,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.2, fadeEnabled 
     setMarbles((prevMarbles) =>
       prevMarbles.filter((marble) => now - marble.timestamp < timeout * 1000)
     );
-  }, [messages, timeout]);
+  }, [messages, timeout, selectedWords]);
 
   // Calculate opacity based on remaining time and fade setting
   const getOpacity = (timestamp) => {
