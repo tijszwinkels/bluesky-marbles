@@ -26,7 +26,7 @@ function HelpPopup({ isOpen, onClose }) {
           </p>
           <h4>Examples</h4>
           <ul>
-            <li>Basic visualization: <a href="https://tijszwinkels.github.io/" target="_blank" rel="noopener noreferrer">Open here</a></li>
+            <li>Basic visualization: <a href="https://tijszwinkels.github.io/bluesky-marbles/" target="_blank" rel="noopener noreferrer">Open here</a></li>
             <li>Love vs Hate visualization: <a href="https://tijszwinkels.github.io/bluesky-marbles/?fraction=1&size=0.5&words=hate%3A6cd926%2Clove%3A4f2aa4%2Chappy%3A0000ed%2Csad%3Ac4a4ce&onlySelected=true&timeout=91" target="_blank" rel="noopener noreferrer">View example</a> (Love and happiness still wins!)</li>
           </ul>
         </div>
