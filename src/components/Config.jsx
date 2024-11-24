@@ -11,7 +11,9 @@ function Config({
   fraction,
   onFractionChange,
   onlySelectedWords,
-  onOnlySelectedWordsChange
+  onOnlySelectedWordsChange,
+  autoRotate,
+  onAutoRotateChange
 }) {
   const handleTimeoutSliderChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -55,6 +57,10 @@ function Config({
 
   const handleOnlySelectedWordsChange = (e) => {
     onOnlySelectedWordsChange(e.target.checked);
+  };
+
+  const handleAutoRotateChange = (e) => {
+    onAutoRotateChange(e.target.checked);
   };
 
   return (
@@ -137,6 +143,15 @@ function Config({
               className="config-checkbox"
             />
             Enable Fade Effect
+          </label>
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={autoRotate}
+              onChange={handleAutoRotateChange}
+              className="config-checkbox"
+            />
+            Auto-Rotate Camera
           </label>
           <label className="checkbox-label">
             <input

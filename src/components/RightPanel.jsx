@@ -20,6 +20,8 @@ function RightPanel({
   hiddenWords,
   onlySelectedWords,
   onOnlySelectedWordsChange,
+  autoRotate,
+  onAutoRotateChange,
   onAddCustomWord,
   isCollapsed,
   onCollapsedChange
@@ -58,6 +60,8 @@ function RightPanel({
             onFractionChange={onFractionChange}
             onlySelectedWords={onlySelectedWords}
             onOnlySelectedWordsChange={onOnlySelectedWordsChange}
+            autoRotate={autoRotate}
+            onAutoRotateChange={onAutoRotateChange}
           />
         </div>
       </div>

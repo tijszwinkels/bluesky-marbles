@@ -168,7 +168,7 @@ function Vase() {
   );
 }
 
-function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled = true, selectedWords }) {
+function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled = true, selectedWords, autoRotate = true }) {
   const [marbles, setMarbles] = useState([]);
   const marbleCountRef = useRef(0);
 
@@ -260,7 +260,12 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
             />
           ))}
         </Physics>
-        <OrbitControls enablePan={true} target={[0, 4, 0]} />
+        <OrbitControls 
+          enablePan={true} 
+          target={[0, 4, 0]} 
+          autoRotate={autoRotate}
+          autoRotateSpeed={1}
+        />
       </Canvas>
     </div>
   );

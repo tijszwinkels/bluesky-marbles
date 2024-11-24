@@ -44,6 +44,10 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get('fade') !== 'false';
   });
+  const [autoRotate, setAutoRotate] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('rotate') !== 'false';
+  });
   const [onlySelectedWords, setOnlySelectedWords] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('onlySelected') === 'true';
@@ -231,6 +235,11 @@ function App() {
     updateURL({ fade: enabled ? null : 'false' });
   };
 
+  const handleAutoRotateChange = (enabled) => {
+    setAutoRotate(enabled);
+    updateURL({ rotate: enabled ? null : 'false' });
+  };
+
   const handleOnlySelectedWordsChange = (enabled) => {
     setOnlySelectedWords(enabled);
     updateURL({ onlySelected: enabled ? 'true' : null });
@@ -254,6 +263,7 @@ function App() {
               marbleSize={marbleSize}
               fadeEnabled={fadeEnabled}
               selectedWords={selectedWords}
+              autoRotate={autoRotate}
             />
           </div>
         </div>
@@ -268,6 +278,8 @@ function App() {
         onFractionChange={handleFractionChange}
         fadeEnabled={fadeEnabled}
         onFadeChange={handleFadeChange}
+        autoRotate={autoRotate}
+        onAutoRotateChange={handleAutoRotateChange}
         onlySelectedWords={onlySelectedWords}
         onOnlySelectedWordsChange={handleOnlySelectedWordsChange}
         selectedWords={selectedWords}
