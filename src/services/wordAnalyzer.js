@@ -8,9 +8,10 @@ class WordAnalyzer {
       'think', 'three', 'water', 'where', 'which', 'world', 'would',
       'people', 'should', 'because', 'between', 'choose', 'always', 'literally',
       'through', 'basically', 'really', 'being', 'those', 'going', 'might',
-      'during', 'another'
+      'during', 'another', 'while', 'getting', 'makes', 'seemed', 'since',
+      'looks', 'doing', 'gonna', 'looking', 'though'
     ]);
-    this.wordsToAllow = new Set(['love', 'hate', 'sad']);
+    this.wordsToAllow = new Set(['love', 'hate', 'sad', 'bad', 'cool']); // allowed words < 5 chars
   }
 
   updateWordFrequencies(text, now) {
