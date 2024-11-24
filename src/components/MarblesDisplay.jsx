@@ -81,27 +81,55 @@ function Ground() {
   );
 }
 
-function Wall({ position, args }) {
-  const [ref] = useBox(() => ({
-    args,
-    position,
+function Wall({ position, args, rotation }) {
+  const [width, height, depth] = args;
+  const baseHeight = 0.5; // Height of the vertical base
+  const mainHeight = height - baseHeight; // Height of the tilted portion
+  
+  // Base wall (vertical)
+  const [baseRef] = useBox(() => ({
+    args: [width, baseHeight, depth],
+    position: [position[0], baseHeight/2, position[2]],
+    rotation: [0, 0, 0],
     type: 'Static',
   }));
 
+  // Main wall (tilted)
+  const [mainRef] = useBox(() => ({
+    args: [width, mainHeight, depth],
+    position: [
+      position[0],
+      baseHeight + mainHeight/2,
+      position[2]
+    ],
+    rotation,
+    type: 'Static',
+  }));
+
+  const wallMaterial = (
+    <meshPhysicalMaterial 
+      color="#ffffff"
+      transparent={true}
+      opacity={0.2}
+      roughness={0}
+      metalness={0.1}
+      transmission={0.9}
+      side={2}
+      depthWrite={false}
+    />
+  );
+
   return (
-    <mesh ref={ref}>
-      <boxGeometry args={args} />
-      <meshPhysicalMaterial 
-        color="#ffffff"
-        transparent={true}
-        opacity={0.2}
-        roughness={0}
-        metalness={0.1}
-        transmission={0.9}
-        side={2}
-        depthWrite={false}
-      />
-    </mesh>
+    <>
+      <mesh ref={baseRef}>
+        <boxGeometry args={[width, baseHeight, depth]} />
+        {wallMaterial}
+      </mesh>
+      <mesh ref={mainRef}>
+        <boxGeometry args={[width, mainHeight, depth]} />
+        {wallMaterial}
+      </mesh>
+    </>
   );
 }
 
@@ -110,25 +138,31 @@ function Vase() {
   const thickness = 0.2;
   const width = 8;
   const wallHeight = height;
+  const tiltAngle = Math.PI / 15; // 12 degrees tilt
   
   return (
-    <group position={[0, height/2, 0]}>
-      {/* All walls are now straight and unified */}
+    <group position={[0, 0, 0]}>
+      {/* Front and back walls tilted outward */}
       <Wall 
         position={[0, 0, width/2]} 
         args={[width, wallHeight, thickness]}
+        rotation={[-tiltAngle, 0, 0]}
       />
       <Wall 
         position={[0, 0, -width/2]} 
         args={[width, wallHeight, thickness]}
+        rotation={[tiltAngle, 0, 0]}
       />
+      {/* Side walls tilted inward */}
       <Wall 
         position={[-width/2, 0, 0]} 
         args={[thickness, wallHeight, width]}
+        rotation={[0, 0, tiltAngle]}
       />
       <Wall 
         position={[width/2, 0, 0]} 
         args={[thickness, wallHeight, width]}
+        rotation={[0, 0, -tiltAngle]}
       />
     </group>
   );
