@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Stats from './Stats';
 import Config from './Config';
 import WordFrequency from './WordFrequency';
@@ -20,15 +20,15 @@ function RightPanel({
   hiddenWords,
   onlySelectedWords,
   onOnlySelectedWordsChange,
-  onAddCustomWord
+  onAddCustomWord,
+  isCollapsed,
+  onCollapsedChange
 }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
   return (
     <div className={`right-panel ${isCollapsed ? 'collapsed' : ''}`}>
       <button 
         className="collapse-button"
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={() => onCollapsedChange(!isCollapsed)}
         aria-label={isCollapsed ? "Expand panel" : "Collapse panel"}
       >
         {isCollapsed ? '>' : '<'}

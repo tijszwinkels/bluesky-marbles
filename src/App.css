@@ -24,7 +24,7 @@
   margin-right: 0;
 }
 
-.right-panel.collapsed ~ .main-content {
+.container.panel-collapsed .main-content {
   margin-right: -284px; /* 300px - 16px for the visible collapse button */
 }
 
@@ -64,5 +64,11 @@
 
   .main-content {
     padding: 10px;
+    margin-right: 0 !important; /* Override the margin since panel is fixed positioned */
+    width: 100%;
+  }
+  
+  .container.panel-collapsed .main-content {
+    margin-right: 0;
   }
 }

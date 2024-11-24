@@ -8,6 +8,7 @@ import './App.css';
 
 function App() {
   const [messages, setMessages] = useState([]);
+  const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(window.innerWidth <= 768);
   const [selectedWords, setSelectedWords] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     const wordsParam = params.get('words');
@@ -237,7 +238,7 @@ function App() {
   };
 
   return (
-    <div className="container">
+    <div className={`container ${isRightPanelCollapsed ? 'panel-collapsed' : ''}`}>
       <div className="main-content">
         <div className="filter-container">
           <Filter value={filterTerm} onChange={handleFilterChange} />
@@ -274,6 +275,8 @@ function App() {
         onWordHide={handleWordHide}
         hiddenWords={hiddenWords}
         onAddCustomWord={handleAddCustomWord}
+        isCollapsed={isRightPanelCollapsed}
+        onCollapsedChange={setIsRightPanelCollapsed}
       />
     </div>
   );
