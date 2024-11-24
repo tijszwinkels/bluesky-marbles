@@ -2,6 +2,21 @@
  
 A real-time 3D visualization of BlueSky's jetstream (firehose) feed, where each post materializes as a marble in a physics-enabled environment. The visualization provides an engaging way to observe and analyze the flow of posts on the BlueSky social network.
 
+# Usage
+
+- Open [here](https://tijszwinkels.github.io/). 
+- [This is a pretty preconfigured one](https://tijszwinkels.github.io/bluesky-marbles/?fraction=1&size=0.5&words=hate%3A6cd926%2Clove%3A4f2aa4%2Chappy%3A0000ed%2Csad%3Ac4a4ce&onlySelected=true&timeout=91). (And, yes! - Love and happiness still wins!)
+
+This is animation of marbles falling in a glass vase. Each message on [Bluesky](https://bsky.app/) fitting the filter criteria is a single marble. 
+
+Starting the app, no words are selected and every message gets a different color. On the right pane, counts of the different words in the jetstream are tracked. You can put a global filter at the top. By default, it's only showing 1% of all messages. Change the 'message fraction' configuration to change that.
+
+Click one or multiple words to assign colors. Click on the color to change it. By default, all other marbles are still shown. Click the 'Only Selected Words' configuration to only show words with a color assigned. After doing this, you can likely increase the message fraction.
+
+If the message fraction is 1, all messages going through bluesky are processed.
+
+Happy with a visualization? The URL contains all settings! - Copy the url and share it on Bluesky mentioning #Marbles.
+
 ## Features
 
 - **Real-time Visualization**: Each BlueSky post appears as a marble dropping into a transparent container
@@ -78,11 +93,6 @@ All settings can be controlled via URL parameters:
 - `fade`: Enable/disable fade effect
 - `words`: Comma-separated list of word:color pairs
 - `onlySelected`: Show only posts containing selected words
-
-Example:
-```
-http://localhost:5173/?filter=tech&timeout=30&size=0.3&words=love:ff0000,hate:0000ff
-```
 
 ## Credit
 
