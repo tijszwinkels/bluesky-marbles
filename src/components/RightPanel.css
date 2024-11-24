@@ -54,9 +54,36 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.panel-section h3 {
-  margin: 0 0 15px 0;
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.section-header h3 {
+  margin: 0;
   color: #fff;
+}
+
+.help-button {
+  background: #3a3a3a;
+  border: 1px solid #444;
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.help-button:hover {
+  background: #444;
+  border-color: #555;
 }
 
 @media (max-width: 768px) {

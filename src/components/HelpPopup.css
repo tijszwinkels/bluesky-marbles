@@ -1,0 +1,70 @@
+.help-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.help-popup {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  color: #fff;
+  border: 1px solid #333;
+}
+
+.help-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+}
+
+.help-close-button:hover {
+  color: #ccc;
+}
+
+.help-content {
+  margin-top: 10px;
+}
+
+.help-content h4 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.help-content p {
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.help-content a {
+  color: #58a6ff;
+  text-decoration: none;
+}
+
+.help-content a:hover {
+  text-decoration: underline;
+}
+
+.help-content ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-top: 10px;
+}

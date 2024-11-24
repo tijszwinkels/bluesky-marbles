@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Stats from './Stats';
 import Config from './Config';
 import WordFrequency from './WordFrequency';
+import HelpPopup from './HelpPopup';
 import './RightPanel.css';
 
 function RightPanel({ 
@@ -26,6 +27,8 @@ function RightPanel({
   isCollapsed,
   onCollapsedChange
 }) {
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
   return (
     <div className={`right-panel ${isCollapsed ? 'collapsed' : ''}`}>
       <button 
@@ -37,7 +40,16 @@ function RightPanel({
       </button>
       <div className="panel-content">
         <div className="panel-section">
-          <h3>Statistics</h3>
+          <div className="section-header">
+            <h3>Statistics</h3>
+            <button 
+              className="help-button"
+              onClick={() => setIsHelpOpen(true)}
+              aria-label="Help"
+            >
+              ?
+            </button>
+          </div>
           <Stats stats={stats} />
         </div>
         <WordFrequency 
@@ -65,6 +77,7 @@ function RightPanel({
           />
         </div>
       </div>
+      <HelpPopup isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </div>
   );
 }
