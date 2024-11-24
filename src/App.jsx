@@ -52,6 +52,7 @@ function App() {
     messagesPerMinute: 0,
     bytesPerSecond: 0,
     bytesPerMinute: 0,
+    wordFrequencies: new Map()
   });
 
   const wsRef = useRef(null);
@@ -173,16 +174,18 @@ function App() {
 
   const handleMessage = useCallback((data, newStats) => {
     // Update stats regardless of whether we received a message
-    setStats(prev => {
-      // Merge custom words with websocket word frequencies
-      const mergedFrequencies = new Map(newStats.wordFrequencies || new Map());
-      customWords.forEach((freq, word) => {
-        if (!mergedFrequencies.has(word)) {
-          mergedFrequencies.set(word, freq);
-        }
+    if (newStats !== null) {
+      setStats(prev => {
+        // Merge custom words with websocket word frequencies
+        const mergedFrequencies = new Map(newStats.wordFrequencies || new Map());
+        customWords.forEach((freq, word) => {
+          if (!mergedFrequencies.has(word)) {
+            mergedFrequencies.set(word, freq);
+          }
+        });
+        return { ...newStats, wordFrequencies: mergedFrequencies };
       });
-      return { ...newStats, wordFrequencies: mergedFrequencies };
-    });
+    }
 
     // Only add message if we received one (filtered messages won't be passed)
     if (data) {

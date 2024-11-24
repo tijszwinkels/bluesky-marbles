@@ -27,6 +27,8 @@ class WebSocketService {
       'during', 'another'
     ]);
     this.wordsToAllow = new Set(['love', 'hate', 'sad']);
+    this.lastStatsUpdate = 0;
+    this.debounceInterval = 100;
   }
 
   setTimeout(seconds) {
@@ -171,13 +173,21 @@ class WebSocketService {
       // Calculate stats based on current filter state
       const stats = this.calculateStats(now);
 
-      // Call the onMessage callback with the data and stats
+      // Only send stats update if enough time has passed since last update
+      const shouldUpdateStats = now - this.lastStatsUpdate >= this.debounceInterval;
+      
+      // Call the onMessage callback with the data and stats if needed
       if (this.shouldIncludeMessage(data)) {
-        this.onMessage(data, stats);
+        this.onMessage(data, shouldUpdateStats ? stats : null);
       } else if (!this.filterTerm && Math.random() <= this.fraction) {
-        this.onMessage(data, stats);
-      } else {
+        this.onMessage(data, shouldUpdateStats ? stats : null);
+      } else if (shouldUpdateStats) {
         this.onMessage(null, stats);
+      }
+
+      // Update lastStatsUpdate timestamp if we sent stats
+      if (shouldUpdateStats) {
+        this.lastStatsUpdate = now;
       }
     };
 
