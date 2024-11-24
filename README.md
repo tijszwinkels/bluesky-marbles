@@ -2,6 +2,8 @@
  
 A real-time 3D visualization of BlueSky's jetstream (firehose) feed, where each post materializes as a marble in a physics-enabled environment. The visualization provides an engaging way to observe and analyze the flow of posts on the BlueSky social network.
 
+![Demo](public/demo.gif)
+
 # Usage
 
 - Open [here](https://tijszwinkels.github.io/bluesky-marbles). 
