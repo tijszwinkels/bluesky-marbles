@@ -1,7 +1,7 @@
 import React from 'react';
 import './LastTweet.css';
 
-const LastTweet = ({ messages }) => {
+const LastTweet = ({ messages, marbleSelectTimeout }) => {
   if (messages.length === 0) return null;
 
   const lastMessage = messages[messages.length - 1];
@@ -15,6 +15,7 @@ const LastTweet = ({ messages }) => {
 
   return (
     <div className="last-tweet">
+      <div className="progress-bar" style={{ '--animation-duration': `${marbleSelectTimeout}s` }}></div>
       <a href={blueskyUrl} target="_blank" rel="noopener noreferrer">
         <strong>{author}</strong>: {text}
       </a>
