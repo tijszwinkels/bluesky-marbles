@@ -13,7 +13,9 @@ function Config({
   onlySelectedWords,
   onOnlySelectedWordsChange,
   autoRotate,
-  onAutoRotateChange
+  onAutoRotateChange,
+  marbleSelectTimeout,
+  onMarbleSelectTimeoutChange
 }) {
   const handleTimeoutSliderChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -51,6 +53,18 @@ function Config({
     }
   };
 
+  const handleMarbleSelectTimeoutSliderChange = (e) => {
+    const value = parseFloat(e.target.value);
+    onMarbleSelectTimeoutChange(value);
+  };
+
+  const handleMarbleSelectTimeoutInputChange = (e) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value) && value >= 1 && value <= 30) {
+      onMarbleSelectTimeoutChange(value);
+    }
+  };
+
   const handleFadeChange = (e) => {
     onFadeChange(e.target.checked);
   };
@@ -83,6 +97,29 @@ function Config({
             max="300"
             value={timeout}
             onChange={handleTimeoutInputChange}
+            className="config-input"
+          />
+        </div>
+      </div>
+      <div className="config-item">
+        <label>Marble Selection Timeout (seconds)</label>
+        <div className="config-controls">
+          <input
+            type="range"
+            min="1"
+            max="30"
+            step="1"
+            value={marbleSelectTimeout}
+            onChange={handleMarbleSelectTimeoutSliderChange}
+            className="config-slider"
+          />
+          <input
+            type="number"
+            min="1"
+            max="30"
+            step="1"
+            value={marbleSelectTimeout}
+            onChange={handleMarbleSelectTimeoutInputChange}
             className="config-input"
           />
         </div>

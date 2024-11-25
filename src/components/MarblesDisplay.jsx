@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics, useSphere, usePlane, useBox } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
@@ -179,15 +179,40 @@ function Vase() {
   );
 }
 
-function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled = true, selectedWords, autoRotate = true, onMarbleSelect }) {
+function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled = true, selectedWords, autoRotate = true, onMarbleSelect, marbleSelectTimeout = 5 }) {
   const [marbles, setMarbles] = useState([]);
   const [selectedMarbleId, setSelectedMarbleId] = useState(null);
   const marbleCountRef = useRef(0);
   const timeoutRef = useRef(null);
-  const marbleSelectTimeout = 5000;
 
+  const selectRandomMarble = useCallback(() => {
+    setMarbles(currentMarbles => {
+      if (currentMarbles.length === 0) return currentMarbles;
+
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      const currentIndex = currentMarbles.findIndex(m => m.id === selectedMarbleId);
+      let randomIndex;
+      
+      console.log(currentMarbles.length);
+      randomIndex = Math.floor(Math.random() * currentMarbles.length);
+      
+      const selectedMarble = currentMarbles[randomIndex];
+      setSelectedMarbleId(selectedMarble.id);
+      onMarbleSelect(selectedMarble.message);
+
+      // Set timeout to select another random marble
+      timeoutRef.current = setTimeout(selectRandomMarble, marbleSelectTimeout * 1000);
+
+      return currentMarbles;
+    });
+  }, [marbleSelectTimeout, onMarbleSelect]);
+
+  // Cleanup timeouts on unmount
   useEffect(() => {
-    // Cleanup timeout on unmount
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -195,7 +220,15 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
     };
   }, []);
 
-  const handleMarbleSelect = (message) => {
+  // Start auto-selection when first marble arrives
+  useEffect(() => {
+    if (marbles.length > 0 && !selectedMarbleId) {
+      selectRandomMarble();
+    }
+  }, [marbles.length, selectRandomMarble]);
+
+  // Handle marble hover
+  const handleMarbleSelect = useCallback((message) => {
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -207,18 +240,16 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
       setSelectedMarbleId(selectedMarble.id);
       onMarbleSelect(message);
 
-      // Set timeout to clear selection after 20 seconds
-      timeoutRef.current = setTimeout(() => {
-        setSelectedMarbleId(null);
-        onMarbleSelect(null);
-      }, marbleSelectTimeout);
+      // Set timeout to select another random marble
+      timeoutRef.current = setTimeout(selectRandomMarble, marbleSelectTimeout * 1000);
     }
-  };
+  }, [marbles, marbleSelectTimeout, onMarbleSelect, selectRandomMarble]);
 
+  // Handle messages updates
   useEffect(() => {
     if (messages.length === 0) return;
 
-    // Add a new marble for the latest message
+    const now = Date.now();
     const lastMessage = messages[messages.length - 1];
     const messageText = lastMessage?.commit?.record?.text;
     marbleCountRef.current += 1;
@@ -229,10 +260,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
           .filter(word => messageText.toLowerCase().includes(word.toLowerCase()))
       : [];
     
-    // Determine marble color:
-    // - If no words are selected, use random color
-    // - If words are selected but none match, use white
-    // - If words match, blend their colors
+    // Determine marble color
     let marbleColor;
     if (selectedWords.size === 0) {
       marbleColor = generateRandomColor();
@@ -242,22 +270,29 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
       marbleColor = blendColors(matchingWords.map(word => selectedWords.get(word)));
     }
 
+    // Create new marble
     const newMarble = {
-      id: `marble-${Date.now()}-${marbleCountRef.current}`,
-      timestamp: Date.now(),
+      id: `marble-${now}-${marbleCountRef.current}`,
+      timestamp: now,
       position: [Math.random() * 5 - 2, 15, Math.random() * 5 - 2],
       color: marbleColor,
       message: lastMessage
     };
 
-    setMarbles((prevMarbles) => [...prevMarbles, newMarble]);
+    // Update marbles list, removing expired ones
+    setMarbles(prevMarbles => {
+      const validMarbles = prevMarbles.filter(marble => 
+        now - marble.timestamp < timeout * 1000
+      );
 
-    // Remove marbles older than timeout
-    const now = Date.now();
-    setMarbles((prevMarbles) =>
-      prevMarbles.filter((marble) => now - marble.timestamp < timeout * 1000)
-    );
-  }, [messages, timeout, selectedWords]);
+      // If the currently selected marble was removed, trigger a new selection
+      if (selectedMarbleId && !validMarbles.some(m => m.id === selectedMarbleId)) {
+        setTimeout(selectRandomMarble, 0);
+      }
+
+      return [...validMarbles, newMarble];
+    });
+  }, [messages, timeout, selectedWords, selectedMarbleId, selectRandomMarble]);
 
   // Calculate opacity based on remaining time and fade setting
   const getOpacity = (timestamp) => {

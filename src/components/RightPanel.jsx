@@ -25,7 +25,9 @@ function RightPanel({
   onAutoRotateChange,
   onAddCustomWord,
   isCollapsed,
-  onCollapsedChange
+  onCollapsedChange,
+  marbleSelectTimeout,
+  onMarbleSelectTimeoutChange
 }) {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
@@ -74,6 +76,8 @@ function RightPanel({
             onOnlySelectedWordsChange={onOnlySelectedWordsChange}
             autoRotate={autoRotate}
             onAutoRotateChange={onAutoRotateChange}
+            marbleSelectTimeout={marbleSelectTimeout}
+            onMarbleSelectTimeoutChange={onMarbleSelectTimeoutChange}
           />
         </div>
       </div>

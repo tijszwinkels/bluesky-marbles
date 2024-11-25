@@ -53,6 +53,10 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get('onlySelected') === 'true';
   });
+  const [marbleSelectTimeout, setMarbleSelectTimeout] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return parseInt(params.get('selectTimeout')) || 3;
+  });
   const [stats, setStats] = useState({
     messagesPerSecond: 0,
     messagesPerMinute: 0,
@@ -247,8 +251,10 @@ function App() {
     setMessages([]);
   };
 
-  // Get the message to display (either selected message or latest message)
-  const displayMessage = selectedMessage || (messages.length > 0 ? messages[messages.length - 1] : null);
+  const handleMarbleSelectTimeoutChange = (newTimeout) => {
+    setMarbleSelectTimeout(newTimeout);
+    updateURL({ selectTimeout: newTimeout });
+  };
 
   return (
     <div className={`container ${isRightPanelCollapsed ? 'panel-collapsed' : ''}`}>
@@ -257,7 +263,7 @@ function App() {
           <Filter value={filterTerm} onChange={handleFilterChange} />
         </div>
         <div className="last-tweet">
-          {displayMessage && <LastTweet messages={[displayMessage]} />}
+          {selectedMessage && <LastTweet messages={[selectedMessage]} />}
         </div>
         <div className="visualization-row">
           <div className="marbles-container">
@@ -269,6 +275,7 @@ function App() {
               selectedWords={selectedWords}
               autoRotate={autoRotate}
               onMarbleSelect={setSelectedMessage}
+              marbleSelectTimeout={marbleSelectTimeout}
             />
           </div>
         </div>
@@ -294,6 +301,8 @@ function App() {
         onAddCustomWord={handleAddCustomWord}
         isCollapsed={isRightPanelCollapsed}
         onCollapsedChange={setIsRightPanelCollapsed}
+        marbleSelectTimeout={marbleSelectTimeout}
+        onMarbleSelectTimeoutChange={handleMarbleSelectTimeoutChange}
       />
     </div>
   );
