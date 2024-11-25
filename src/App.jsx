@@ -55,7 +55,7 @@ function App() {
   });
   const [marbleSelectTimeout, setMarbleSelectTimeout] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return parseInt(params.get('selectTimeout')) || 5;
+    return parseInt(params.get('selectTimeout')) || 10;
   });
   const [stats, setStats] = useState({
     messagesPerSecond: 0,
@@ -262,7 +262,7 @@ function App() {
         <div className="filter-container">
           <Filter value={filterTerm} onChange={handleFilterChange} />
         </div>
-          {selectedMessage && <LastTweet messages={[selectedMessage]} marbleSelectTimeout={marbleSelectTimeout} />}
+          <LastTweet messages={[selectedMessage]} marbleSelectTimeout={marbleSelectTimeout} />
         <div className="visualization-row">
           <div className="marbles-container">
             <MarblesDisplay 

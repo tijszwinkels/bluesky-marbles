@@ -5,7 +5,6 @@ const LastTweet = ({ messages, marbleSelectTimeout }) => {
   if (!messages || !messages[0]) {
     return (
       <div className="last-tweet">
-        <div>No tweet selected</div>
       </div>
     );
   }
@@ -18,7 +17,6 @@ const LastTweet = ({ messages, marbleSelectTimeout }) => {
   if (!text || !author || !postId) {
     return (
       <div className="last-tweet">
-        <div>Invalid or empty tweet</div>
       </div>
     );
   }
