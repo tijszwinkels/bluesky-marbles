@@ -184,6 +184,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
   const [selectedMarbleId, setSelectedMarbleId] = useState(null);
   const marbleCountRef = useRef(0);
   const timeoutRef = useRef(null);
+  const lastMessageRef = useRef(null);
 
   const selectRandomMarble = useCallback(() => {
     setMarbles(currentMarbles => {
@@ -276,12 +277,16 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
     }
   }, [marbles, marbleSelectTimeout, onMarbleSelect, selectRandomMarble]);
 
-  // Handle messages updates
+  // Handle new messages
   useEffect(() => {
     if (messages.length === 0) return;
 
-    const now = Date.now();
     const lastMessage = messages[messages.length - 1];
+    // Check if this is actually a new message
+    if (lastMessage === lastMessageRef.current) return;
+    lastMessageRef.current = lastMessage;
+
+    const now = Date.now();
     const messageText = lastMessage?.commit?.record?.text;
     marbleCountRef.current += 1;
 
@@ -310,20 +315,29 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
       message: lastMessage
     };
 
-    // Update marbles list, removing expired ones
-    setMarbles(prevMarbles => {
-      const validMarbles = prevMarbles.filter(marble => 
-        now - marble.timestamp < timeout * 1000
-      );
+    setMarbles(prevMarbles => [...prevMarbles, newMarble]);
+  }, [messages, selectedWords]);
 
-      // If the currently selected marble was removed, trigger a new selection
-      if (selectedMarbleId && !validMarbles.some(m => m.id === selectedMarbleId)) {
-        setTimeout(selectRandomMarble, 0);
-      }
+  // Handle marble cleanup
+  useEffect(() => {
+    const cleanupInterval = setInterval(() => {
+      const now = Date.now();
+      setMarbles(prevMarbles => {
+        const validMarbles = prevMarbles.filter(marble => 
+          now - marble.timestamp < timeout * 1000
+        );
 
-      return [...validMarbles, newMarble];
-    });
-  }, [messages, timeout, selectedWords, selectedMarbleId, selectRandomMarble]);
+        // If the currently selected marble was removed, trigger a new selection
+        if (selectedMarbleId && !validMarbles.some(m => m.id === selectedMarbleId)) {
+          setTimeout(selectRandomMarble, 0);
+        }
+
+        return validMarbles;
+      });
+    }, 1000); // Check every second
+
+    return () => clearInterval(cleanupInterval);
+  }, [timeout, selectedMarbleId, selectRandomMarble]);
 
   // Calculate opacity based on remaining time and fade setting
   const getOpacity = (timestamp) => {
