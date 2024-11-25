@@ -3,12 +3,11 @@
   background: #2a2a2a;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  height: fit-content;
-  min-height: 50px;
-  max-height: 100px;
+  height: 80px;
   overflow-y: auto;
   flex-shrink: 0;
   position: relative;
+  color: #fff;
 }
 
 .last-tweet a {

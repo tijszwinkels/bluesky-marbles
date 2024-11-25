@@ -262,9 +262,7 @@ function App() {
         <div className="filter-container">
           <Filter value={filterTerm} onChange={handleFilterChange} />
         </div>
-        <div className="last-tweet">
           {selectedMessage && <LastTweet messages={[selectedMessage]} marbleSelectTimeout={marbleSelectTimeout} />}
-        </div>
         <div className="visualization-row">
           <div className="marbles-container">
             <MarblesDisplay 

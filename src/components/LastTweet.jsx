@@ -2,14 +2,26 @@ import React from 'react';
 import './LastTweet.css';
 
 const LastTweet = ({ messages, marbleSelectTimeout }) => {
-  if (messages.length === 0) return null;
+  if (!messages || !messages[0]) {
+    return (
+      <div className="last-tweet">
+        <div>No tweet selected</div>
+      </div>
+    );
+  }
 
-  const lastMessage = messages[messages.length - 1];
-  if (lastMessage.kind !== 'commit' || !lastMessage.commit?.record?.text) return null;
-
-  const text = lastMessage.commit.record.text;
+  const lastMessage = messages[0];
+  const text = lastMessage.commit?.record?.text;
   const author = lastMessage.did;
-  const postId = lastMessage.commit.rkey;
+  const postId = lastMessage.commit?.rkey;
+
+  if (!text || !author || !postId) {
+    return (
+      <div className="last-tweet">
+        <div>Invalid or empty tweet</div>
+      </div>
+    );
+  }
 
   const blueskyUrl = `https://bsky.app/profile/${author}/post/${postId}`;
 
