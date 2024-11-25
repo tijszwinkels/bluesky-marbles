@@ -15,7 +15,11 @@ const LastTweet = ({ messages, marbleSelectTimeout }) => {
 
   return (
     <div className="last-tweet">
-      <div className="progress-bar" style={{ '--animation-duration': `${marbleSelectTimeout}s` }}></div>
+      <div 
+        className="progress-bar" 
+        style={{ '--animation-duration': `${marbleSelectTimeout}s` }}
+        key={postId}
+      ></div>
       <a href={blueskyUrl} target="_blank" rel="noopener noreferrer">
         <strong>{author}</strong>: {text}
       </a>

@@ -194,22 +194,53 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
         clearTimeout(timeoutRef.current);
       }
 
-      const currentIndex = currentMarbles.findIndex(m => m.id === selectedMarbleId);
-      let randomIndex;
-      
-      console.log(currentMarbles.length);
-      randomIndex = Math.floor(Math.random() * currentMarbles.length);
-      
-      const selectedMarble = currentMarbles[randomIndex];
-      setSelectedMarbleId(selectedMarble.id);
-      onMarbleSelect(selectedMarble.message);
+      // Try to find a marble with content
+      let attempts = 0;
+      let selectedMarble = null;
+      const maxAttempts = 5;
 
-      // Set timeout to select another random marble
-      timeoutRef.current = setTimeout(selectRandomMarble, marbleSelectTimeout * 1000);
+      while (attempts < maxAttempts && !selectedMarble) {
+        const randomIndex = Math.floor(Math.random() * currentMarbles.length);
+        console.log(`marble: ${randomIndex}, length: ${currentMarbles.length}`);
+        const marble = currentMarbles[randomIndex];
+        const messageText = marble.message?.commit?.record?.text;
+
+        if (messageText) {
+          selectedMarble = marble;
+        } else {
+          console.warn('Found empty tweet:', marble.message);
+          attempts++;
+        }
+      }
+
+      // If we couldn't find a marble with content after all attempts, just use the last one we tried
+      if (!selectedMarble && currentMarbles.length > 0) {
+        selectedMarble = currentMarbles[Math.floor(Math.random() * currentMarbles.length)];
+        console.warn('Could not find marble with content after', maxAttempts, 'attempts');
+      }
+
+      if (selectedMarble) {
+        setSelectedMarbleId(selectedMarble.id);
+        onMarbleSelect(selectedMarble.message);
+
+        // Set timeout to select another random marble
+        timeoutRef.current = setTimeout(selectRandomMarble, marbleSelectTimeout * 1000);
+      }
 
       return currentMarbles;
     });
   }, [marbleSelectTimeout, onMarbleSelect]);
+
+  // Effect to handle marbleSelectTimeout changes
+  useEffect(() => {
+    // If there's a currently selected marble, reset its timeout with the new duration
+    if (selectedMarbleId) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(selectRandomMarble, marbleSelectTimeout * 1000);
+    }
+  }, [marbleSelectTimeout, selectRandomMarble]);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
