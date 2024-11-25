@@ -7,6 +7,7 @@ import RightPanel from './components/RightPanel';
 import './App.css';
 
 function App() {
+  const [selectedMessage, setSelectedMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(window.innerWidth <= 768);
   const [selectedWords, setSelectedWords] = useState(() => {
@@ -246,6 +247,9 @@ function App() {
     setMessages([]);
   };
 
+  // Get the message to display (either selected message or latest message)
+  const displayMessage = selectedMessage || (messages.length > 0 ? messages[messages.length - 1] : null);
+
   return (
     <div className={`container ${isRightPanelCollapsed ? 'panel-collapsed' : ''}`}>
       <div className="main-content">
@@ -253,7 +257,7 @@ function App() {
           <Filter value={filterTerm} onChange={handleFilterChange} />
         </div>
         <div className="last-tweet">
-          <LastTweet messages={messages} />
+          {displayMessage && <LastTweet messages={[displayMessage]} />}
         </div>
         <div className="visualization-row">
           <div className="marbles-container">
@@ -264,6 +268,7 @@ function App() {
               fadeEnabled={fadeEnabled}
               selectedWords={selectedWords}
               autoRotate={autoRotate}
+              onMarbleSelect={setSelectedMessage}
             />
           </div>
         </div>

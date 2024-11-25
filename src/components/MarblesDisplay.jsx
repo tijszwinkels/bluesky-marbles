@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics, useSphere, usePlane, useBox } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
+import * as THREE from 'three';
 import './MarblesDisplay.css';
 
 // Helper function to blend colors
@@ -45,7 +46,7 @@ function generateRandomColor() {
   return `hsl(${hue}, 70%, 50%)`;
 }
 
-function Marble({ position, color, opacity, size }) {
+function Marble({ position, color, opacity, size, message, onSelect, isSelected }) {
   const [ref] = useSphere(() => ({
     mass: 1,
     position,
@@ -53,7 +54,15 @@ function Marble({ position, color, opacity, size }) {
   }));
 
   return (
-    <mesh ref={ref} castShadow receiveShadow>
+    <mesh 
+      ref={ref} 
+      castShadow 
+      receiveShadow
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        onSelect(message);
+      }}
+    >
       <sphereGeometry args={[size, 32, 32]} />
       <meshPhysicalMaterial 
         color={color}
@@ -63,6 +72,8 @@ function Marble({ position, color, opacity, size }) {
         metalness={0.1}
         transmission={0.3}
         thickness={0.5}
+        emissive={isSelected ? color : "#000000"}
+        emissiveIntensity={isSelected ? 0.5 : 0}
       />
     </mesh>
   );
@@ -168,9 +179,41 @@ function Vase() {
   );
 }
 
-function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled = true, selectedWords, autoRotate = true }) {
+function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled = true, selectedWords, autoRotate = true, onMarbleSelect }) {
   const [marbles, setMarbles] = useState([]);
+  const [selectedMarbleId, setSelectedMarbleId] = useState(null);
   const marbleCountRef = useRef(0);
+  const timeoutRef = useRef(null);
+  const marbleSelectTimeout = 5000;
+
+  useEffect(() => {
+    // Cleanup timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMarbleSelect = (message) => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Find the marble ID for this message
+    const selectedMarble = marbles.find(m => m.message === message);
+    if (selectedMarble) {
+      setSelectedMarbleId(selectedMarble.id);
+      onMarbleSelect(message);
+
+      // Set timeout to clear selection after 20 seconds
+      timeoutRef.current = setTimeout(() => {
+        setSelectedMarbleId(null);
+        onMarbleSelect(null);
+      }, marbleSelectTimeout);
+    }
+  };
 
   useEffect(() => {
     if (messages.length === 0) return;
@@ -204,6 +247,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
       timestamp: Date.now(),
       position: [Math.random() * 5 - 2, 15, Math.random() * 5 - 2],
       color: marbleColor,
+      message: lastMessage
     };
 
     setMarbles((prevMarbles) => [...prevMarbles, newMarble]);
@@ -224,7 +268,7 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
   };
 
   // Calculate camera position with 30° offset
-  const angle = Math.PI / 6; // 30 degrees in radians
+  const angle = Math.PI / 6;
   const distance = 20;
   const cameraX = Math.sin(angle) * distance;
   const cameraZ = Math.cos(angle) * distance;
@@ -257,6 +301,9 @@ function MarblesDisplay({ messages, timeout = 60, marbleSize = 0.5, fadeEnabled 
               color={marble.color}
               opacity={getOpacity(marble.timestamp)}
               size={marbleSize}
+              message={marble.message}
+              onSelect={handleMarbleSelect}
+              isSelected={marble.id === selectedMarbleId}
             />
           ))}
         </Physics>

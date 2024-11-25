@@ -10,7 +10,7 @@ function HelpPopup({ isOpen, onClose }) {
         <button className="help-close-button" onClick={onClose}>×</button>
         <div className="help-content">
           <p>
-            This is animation of marbles falling in a glass vase. Each message on Bluesky fitting the filter criteria is a single marble.
+            This is animation of marbles falling in a glass vase. Each message on Bluesky fitting the filter criteria is a single marble. View the text in a marble by hovering the mouse over it.
           </p>
           <p>
             Starting the app, no words are selected and every message gets a different color. On the right pane, counts of the different words in the jetstream are tracked. You can put a global filter at the top. By default, it's only showing 1% of all messages. Change the 'message fraction' configuration to change that.

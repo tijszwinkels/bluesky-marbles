@@ -9,7 +9,7 @@ A real-time 3D visualization of BlueSky's jetstream (firehose) feed, where each 
 - Open [here](https://tijszwinkels.github.io/bluesky-marbles). 
 - [This is a pretty preconfigured one](https://tijszwinkels.github.io/bluesky-marbles/?fraction=1&size=0.5&words=hate%3A6cd926%2Clove%3A4f2aa4%2Chappy%3A0000ed%2Csad%3Ac4a4ce&onlySelected=true&timeout=91). (And, yes! - Love and happiness still wins!)
 
-This is animation of marbles falling in a glass vase. Each message on [Bluesky](https://bsky.app/) fitting the filter criteria is a single marble. 
+This is animation of marbles falling in a glass vase. Each message on [Bluesky](https://bsky.app/) fitting the filter criteria is a single marble. View the text in a marble by hovering the mouse over it.
 
 Starting the app, no words are selected and every message gets a different color. On the right pane, counts of the different words in the jetstream are tracked. You can put a global filter at the top. By default, it's only showing 1% of all messages. Change the 'message fraction' configuration to change that.
 
